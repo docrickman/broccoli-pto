@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Broccoli Industries — HR Complaint Portal</title>
+<link rel="icon" type="image/webp" href="assets/face.webp">
+<style>
+  :root {
+    --corp-blue: #1a4d8f;
+    --corp-blue-dark: #123762;
+    --corp-gray: #f0f2f5;
+    --border: #c8cdd4;
+    --deny-red: #c0392b;
+    --approve-green: #1e8449;
+    --hr-purple: #6b3fa0;
+    --hr-purple-dark: #4d2c77;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    background: var(--corp-gray);
+    color: #222;
+    min-height: 100vh;
+  }
+  .topbar {
+    background: linear-gradient(180deg, var(--hr-purple), var(--hr-purple-dark));
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  }
+  .topbar img {
+    height: 46px; width: 46px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #fff;
+    object-fit: cover;
+  }
+  .topbar h1 { font-size: 1.15rem; font-weight: 600; }
+  .topbar .sub { font-size: .72rem; opacity: .75; }
+  .topbar a.navlink {
+    margin-left: auto;
+    color: #fff;
+    font-size: .72rem;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.4);
+    padding: 5px 10px;
+    border-radius: 3px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .topbar a.navlink:hover { background: rgba(255,255,255,.28); }
+  .wrap { max-width: 760px; margin: 24px auto 80px; padding: 0 14px; }
+
+  .notice {
+    background: #fff8dc;
+    border: 1px solid #e0c860;
+    border-left: 5px solid #e0a800;
+    padding: 10px 14px;
+    font-size: .8rem;
+    margin-bottom: 18px;
+    border-radius: 3px;
+  }
+  .notice.purple {
+    background: #f3ecfb;
+    border-color: #c9aef0;
+    border-left-color: var(--hr-purple);
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .card-head {
+    background: #fafbfc;
+    border-bottom: 1px solid var(--border);
+    padding: 12px 18px;
+    font-weight: 600;
+    font-size: .95rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .card-body { padding: 18px; }
+
+  .hr-team { display: flex; align-items: center; gap: 16px; }
+  .hr-team img.worm { width: 60%; min-width: 220px; }
+  .hr-team .desc { font-size: .8rem; color: #445; }
+  .figcap { font-size: .7rem; color: #667; padding: 8px 14px 12px; font-style: italic; }
+
+  form .row { margin-bottom: 15px; }
+  label { display: block; font-size: .8rem; font-weight: 600; margin-bottom: 4px; color: #334; }
+  label .req { color: var(--deny-red); }
+  input[type=text], select, textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: .9rem;
+    font-family: inherit;
+    background: #fff;
+  }
+  textarea { resize: vertical; min-height: 90px; }
+  .hint { font-size: .68rem; color: #778; margin-top: 3px; }
+  .two-col { display: flex; gap: 14px; }
+  .two-col > div { flex: 1; }
+
+  .sev-row { display: flex; align-items: center; gap: 12px; }
+  .sev-row input[type=range] { flex: 1; }
+  .sev-label { font-size: .78rem; font-weight: 700; color: var(--hr-purple); min-width: 200px; }
+
+  .checks { font-size: .78rem; }
+  .checks label { display: flex; gap: 8px; font-weight: 400; margin-bottom: 8px; align-items: flex-start; cursor: pointer; }
+  .checks input { margin-top: 2px; }
+
+  .btn {
+    background: var(--hr-purple);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 11px 26px;
+    font-size: .95rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn:hover { background: var(--hr-purple-dark); }
+  .btn.secondary { background: #fff; color: var(--hr-purple); border: 1px solid var(--hr-purple); }
+
+  /* processing overlay */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(30, 18, 48, .93);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+  }
+  .overlay.show { display: flex; }
+  .overlay .box { text-align: center; color: #fff; max-width: 520px; padding: 20px; }
+  .overlay img { max-width: 320px; width: 80%; border-radius: 8px; background: #fff; }
+  .overlay .status { margin-top: 18px; font-size: 1rem; min-height: 1.4em; }
+  .overlay .pct { font-size: .75rem; opacity: .7; margin-top: 6px; }
+
+  /* outcome */
+  #outcome { display: none; }
+  .stamp {
+    display: inline-block;
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    color: var(--hr-purple);
+    border: 6px solid var(--hr-purple);
+    border-radius: 8px;
+    padding: 6px 22px;
+    transform: rotate(-8deg);
+    text-transform: uppercase;
+    animation: stampIn .3s cubic-bezier(.2, 2.5, .5, 1);
+    margin: 10px 0 16px;
+  }
+  @keyframes stampIn {
+    from { transform: rotate(-8deg) scale(3); opacity: 0; }
+    to   { transform: rotate(-8deg) scale(1); opacity: 1; }
+  }
+  .outcome-body { text-align: center; padding: 26px 18px; }
+  .outcome-reason { font-size: .95rem; max-width: 540px; margin: 0 auto 20px; color: #333; }
+
+  .tracker {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin: 6px auto 20px;
+    max-width: 560px;
+    flex-wrap: wrap;
+  }
+  .tracker .stage {
+    font-size: .68rem;
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    background: #fafbfc;
+    color: #99a;
+    position: relative;
+  }
+  .tracker .stage.done { background: var(--hr-purple); color: #fff; border-color: var(--hr-purple-dark); }
+  .tracker .stage.stuck { background: #e8dff5; color: var(--hr-purple-dark); font-weight: 700; }
+
+  .signoff {
+    display: flex; align-items: center; gap: 12px;
+    justify-content: center; margin: 18px 0 6px;
+  }
+  .signoff img { height: 64px; width: 64px; object-fit: contain; }
+  .signoff .who { text-align: left; font-size: .78rem; color: #445; }
+  .signoff .who .name { font-family: "Segoe Script", "Comic Sans MS", cursive; font-size: 1.15rem; color: #123; }
+  .fineprint { font-size: .62rem; color: #99a; max-width: 480px; margin: 14px auto 0; }
+  .outcome-actions { margin-top: 18px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  #escalateNote { font-size: .78rem; color: var(--deny-red); margin-top: 10px; font-weight: 600; }
+
+  footer {
+    text-align: center;
+    font-size: .65rem;
+    color: #99a;
+    padding: 20px;
+  }
+  footer a { color: var(--corp-blue); }
+  .marquee-wrap {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    pointer-events: none;
+    z-index: 40;
+    overflow: hidden;
+    height: 120px;
+    display: none;
+  }
+  .marquee-wrap img {
+    position: absolute;
+    bottom: 0;
+    height: 110px;
+    left: -260px;
+    animation: crawl 14s linear infinite;
+  }
+  @keyframes crawl {
+    from { left: -260px; }
+    to   { left: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <img src="assets/face.webp" alt="Broccoli Industries HR">
+  <div>
+    <h1>Broccoli Industries&trade; &mdash; HR Complaint Portal</h1>
+    <div class="sub">"Your Voice Matters (To Someone, Presumably)" &bull; HR-OS v2.4.1</div>
+  </div>
+  <a class="navlink" href="index.html">&larr; Time Off Portal</a>
+</div>
+
+<div class="wrap">
+
+  <div class="notice purple">
+    <strong>Confidentiality Notice:</strong> All complaints are 100% anonymous. Your complaint will be
+    filed as "Anonymous (Broccoli)". We guessed. There is only one employee.
+  </div>
+
+  <div class="card">
+    <div class="card-head">Meet Your HR Department</div>
+    <div class="card-body hr-team">
+      <img class="worm" src="assets/worm.gif" alt="The HR department">
+      <div class="desc">
+        Broccoli Industries maintains a fully staffed Human Resources department consisting of
+        14 dedicated HR professionals (pictured). Due to a recent restructuring, HR is also
+        management, the union, and the subject of most complaints.
+        <br><br>
+        <strong>Recusal requests:</strong> reviewed by HR. <strong>Status:</strong> all denied.
+      </div>
+    </div>
+    <div class="figcap">Fig. 2 &mdash; The Human Resources department, seen here approaching a complaint.</div>
+  </div>
+
+  <div class="card" id="formCard">
+    <div class="card-head">File a Complaint <span style="font-weight:400;font-size:.7rem;color:#889">Form HR-1 (rev. never)</span></div>
+    <div class="card-body">
+      <form id="hrForm">
+        <div class="two-col row">
+          <div>
+            <label>Your Name (for anonymity purposes) <span class="req">*</span></label>
+            <input type="text" id="empName" placeholder="e.g. Broccoli" required>
+          </div>
+          <div>
+            <label>Employee ID <span class="req">*</span></label>
+            <input type="text" value="BROC-0001" disabled>
+            <div class="hint">Narrows the suspect pool considerably.</div>
+          </div>
+        </div>
+
+        <div class="two-col row">
+          <div>
+            <label>Complaint Against <span class="req">*</span></label>
+            <select id="against" required>
+              <option>The Worm (Fig. 2)</option>
+              <option>Manager 7 of 14 (a segment)</option>
+              <option>The Broccoli Chatter's Union (BCU-69420)</option>
+              <option>Chat (all of them)</option>
+              <option>The Buttworms</option>
+              <option>Myself</option>
+              <option>The concept of Mondays</option>
+            </select>
+          </div>
+          <div>
+            <label>Complaint Category <span class="req">*</span></label>
+            <select id="category" required>
+              <option>Hostile Work Environment (chat was mean)</option>
+              <option>Wage Theft (sub goals moved again)</option>
+              <option>The worm is making eye contact again</option>
+              <option>Union Harassment (BCU-69420 keeps caucusing at me)</option>
+              <option>Odor (buttworm-adjacent, do not elaborate)</option>
+              <option>Retaliation (see: this portal)</option>
+              <option>Denied Time Off (we know. we did it.)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <label>Severity <span class="req">*</span></label>
+          <div class="sev-row">
+            <input type="range" id="severity" min="0" max="4" value="2">
+            <span class="sev-label" id="sevLabel">Actively Streaming Through Tears</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <label>Describe the Incident <span class="req">*</span></label>
+          <textarea id="details" placeholder="Describe what happened. Be specific. HR will read this aloud to the accused, slowly, while maintaining eye contact with you." required></textarea>
+          <div class="hint">Note: incident descriptions become the property of Broccoli Industries and may be used as stream content.</div>
+        </div>
+
+        <div class="row">
+          <label>Desired Outcome <span class="req">*</span></label>
+          <select id="desired" required>
+            <option value="">-- Select a resolution you will not receive --</option>
+            <option>A sincere apology</option>
+            <option>The worm removed from the building</option>
+            <option>Financial compensation (pre-denied)</option>
+            <option>One (1) Soju Saturday, as a treat</option>
+            <option>Sweetie Cutie Yard Time (protected activity)</option>
+            <option>I just want to feel heard</option>
+          </select>
+        </div>
+
+        <div class="row checks">
+          <label><input type="checkbox" required> I understand that HR exists to protect the company, and I am not the company.</label>
+          <label><input type="checkbox" required> I understand my complaint will be reviewed by the party it is about (org chart constraint, see Fig. 2).</label>
+          <label><input type="checkbox" required> I acknowledge that Broccoli Industries does not retaliate. Broccoli Industries pre-taliates.</label>
+          <label><input type="checkbox" required> I waive my right to a resolution, an outcome, and closure (emotional).</label>
+        </div>
+
+        <button type="submit" class="btn">Submit Complaint</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card" id="outcome">
+    <div class="card-head">Complaint Status <span id="caseNo" style="font-weight:400;font-size:.7rem;color:#889"></span></div>
+    <div class="outcome-body">
+      <div class="stamp" id="stampEl">Received</div>
+      <div class="tracker">
+        <span class="stage done">Received</span>
+        <span class="stage stuck" id="stuckStage">Being Processed Emotionally</span>
+        <span class="stage">Investigated</span>
+        <span class="stage">Resolved</span>
+        <span class="stage">Closure (emotional)</span>
+      </div>
+      <p class="outcome-reason" id="outcomeReason"></p>
+      <div class="signoff">
+        <img src="assets/face.webp" alt="HR Business Partner">
+        <div class="who">
+          <div class="name">The HR Department</div>
+          HR Business Partner (all 14, simultaneously)<br>
+          Broccoli Industries&trade; Human Resources<br>
+          <span style="color:#889">Also the accused, in most cases</span>
+        </div>
+      </div>
+      <div id="escalateNote"></div>
+      <div class="outcome-actions">
+        <button class="btn secondary" id="escalateBtn">Escalate to HR's Manager</button>
+        <button class="btn" id="againBtn">File Another Complaint</button>
+      </div>
+      <p class="fineprint">Broccoli Industries takes all complaints seriously, holds them close,
+      and never lets them go anywhere. Complaints are retained forever and forwarded to the accused
+      within 0.0002s as a professional courtesy. This portal is monitored by the worm. The worm says hi.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="box">
+    <img src="assets/bounce.gif" alt="HR responding to your complaint">
+    <div class="status" id="statusText">Locating the HR department&hellip;</div>
+    <div class="pct" id="pctText">0% complete</div>
+  </div>
+</div>
+
+<div class="marquee-wrap" id="marquee">
+  <img src="assets/worm.gif" alt="">
+</div>
+
+<footer>
+  Broccoli Industries&trade; &bull; "Every Complaint Is a Gift (Which We Regift to the Accused)"<br>
+  Need time off to recover from this experience? <a href="index.html">Request it here.</a> (It will be denied.)
+</footer>
+
+<script>
+(function () {
+  var form = document.getElementById('hrForm');
+  var overlay = document.getElementById('overlay');
+  var statusText = document.getElementById('statusText');
+  var pctText = document.getElementById('pctText');
+  var outcome = document.getElementById('outcome');
+  var stampEl = document.getElementById('stampEl');
+  var outcomeReason = document.getElementById('outcomeReason');
+  var caseNo = document.getElementById('caseNo');
+  var escalateBtn = document.getElementById('escalateBtn');
+  var againBtn = document.getElementById('againBtn');
+  var escalateNote = document.getElementById('escalateNote');
+  var marquee = document.getElementById('marquee');
+  var formCard = document.getElementById('formCard');
+  var sev = document.getElementById('severity');
+  var sevLabel = document.getElementById('sevLabel');
+  var escalations = 0;
+
+  var sevLabels = [
+    'Mild Grumbling (off-mic)',
+    'Passive-Aggressive Emote Usage',
+    'Actively Streaming Through Tears',
+    'Considering a Podcast About It',
+    'HR Emergency (the worm knows what it did)'
+  ];
+  sev.addEventListener('input', function () { sevLabel.textContent = sevLabels[sev.value]; });
+
+  var steps = [
+    'Locating the HR department…',
+    'HR department located (it is the worm)…',
+    'Filing recusal request…',
+    'Recusal denied (by the worm)…',
+    'Reading your complaint aloud in the break room…',
+    'The accused has been notified (as a courtesy)…',
+    'The accused has responded: "lol"…',
+    'Cross-filing your complaint as evidence against you…',
+    'Consulting BCU-69420 (they are also involved somehow)…',
+    'Scheduling mediation (mediator: the worm)…',
+    'Processing your complaint emotionally…',
+    'Reaching a conclusion that predates your complaint…'
+  ];
+
+  var outcomes = {
+    worm: [
+      'Your complaint against The Worm has been assigned to The Worm for impartial review. The Worm has reviewed your complaint and found The Worm to be a valued colleague and, frankly, a rock star.',
+      'Investigation complete. The worm has been cleared of all charges by a panel of its 14 segments. The panel noted your complaint showed "a troubling anti-worm bias" and has entered it into your permanent file.',
+      'The worm read your complaint and is processing it emotionally. It has stopped making eye contact, which was your original complaint, so this case is being marked RESOLVED.'
+    ],
+    union: [
+      'The Broccoli Chatter\'s Union (BCU-69420) has reviewed your complaint against the Broccoli Chatter\'s Union (BCU-69420) and voted 12–0 to file a counter-grievance. Mediation is scheduled for a Soju Saturday you now owe them.',
+      'Per the collective bargaining agreement, complaints against BCU-69420 are heard by BCU-69420\'s designated neutral arbiter: BCU-69420. The arbiter finds for BCU-69420 and awards costs (one stream).'
+    ],
+    buttworms: [
+      'Your complaint against The Buttworms has been dismissed. As enrolled dependents, they are protected under your own health plan. HR suggests family counseling (in-network: the worm).',
+      'HR interviewed The Buttworms. They deny everything and have retained BCU-69420 representation. HR asks that you do not elaborate further, in writing, ever again.'
+    ],
+    self: [
+      'Your complaint against yourself has been APPROVED — the first approval in company history. Disciplinary action: you must attend a mandatory one-on-one with yourself (unpaid).',
+      'HR has reviewed your complaint against yourself and agrees enthusiastically. It has been added to a folder that already existed.'
+    ],
+    generic: [
+      'Your complaint has been received, printed, laminated, and mounted in the break room under the heading "Employee Feedback." No further action will be taken.',
+      'After a thorough investigation (the worm looked around), HR has concluded the incident "sounds like a you problem." Case closed.',
+      'Your complaint has been forwarded to the accused as a professional courtesy. They have been granted access to edit it. It is now a complaint about you.',
+      'HR takes your complaint very seriously. It has been escalated to the highest level of the org chart, which is a worm, which has eaten it.',
+      'Resolution reached: HR has scheduled a mandatory team-building exercise for you and the accused. Attendance is required. The exercise is a 6-hour Project Zomboid stream.',
+      'Your desired outcome ("' + '__DESIRED__' + '") was reviewed and found to be adorable. The case has been closed with a status of: heard, not listened to.'
+    ]
+  };
+
+  function caseNum() {
+    return 'Case #HR-' + String(Math.floor(Math.random() * 90000) + 10000);
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    overlay.classList.add('show');
+    marquee.style.display = 'block';
+    var i = 0;
+    statusText.textContent = steps[0];
+    pctText.textContent = '0% complete';
+    var timer = setInterval(function () {
+      i++;
+      if (i < steps.length) {
+        statusText.textContent = steps[i];
+        var pct = Math.round((i / steps.length) * 100);
+        if (i === 8) pct = 12; // the investigation suffered a setback
+        pctText.textContent = pct + '% complete';
+      } else {
+        clearInterval(timer);
+        overlay.classList.remove('show');
+        marquee.style.display = 'none';
+        showOutcome();
+      }
+    }, 950);
+  });
+
+  function showOutcome() {
+    escalations = 0;
+    escalateNote.textContent = '';
+    var against = document.getElementById('against').value;
+    var desired = document.getElementById('desired').value;
+    var pool;
+    if (against.indexOf('Worm') === 4) pool = outcomes.worm;
+    else if (against.indexOf('Union') !== -1 || against.indexOf('BCU') !== -1) pool = outcomes.union;
+    else if (against.indexOf('Buttworms') !== -1) pool = outcomes.buttworms;
+    else if (against === 'Myself') pool = outcomes.self;
+    else pool = outcomes.generic;
+    var text = pool[Math.floor(Math.random() * pool.length)];
+    text = text.replace('__DESIRED__', desired || 'closure');
+    var selfCase = (against === 'Myself');
+    stampEl.textContent = selfCase ? 'Sustained' : 'Noted';
+    outcomeReason.textContent = text;
+    caseNo.textContent = caseNum() + ' • forwarded to accused in 0.0002s';
+    formCard.style.display = 'none';
+    outcome.style.display = 'block';
+    stampEl.style.animation = 'none';
+    void stampEl.offsetWidth;
+    stampEl.style.animation = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  escalateBtn.addEventListener('click', function () {
+    escalations++;
+    var msgs = [
+      'Escalation received. HR\'s manager is the worm. The worm\'s manager is also the worm. It is worms all the way up.',
+      'Your escalation has been merged with your original complaint and both have been marked "duplicate."',
+      'Escalation #' + escalations + ' received. You have been enrolled in HR\'s frequent-complainer program. There are no rewards.',
+      'The worm has personally reviewed your escalation and would like to schedule a 1:1. Camera on. Its camera: 14 cameras.',
+      'Escalation denied. Further escalations will be automatically converted into compliments and read on stream.'
+    ];
+    escalateNote.textContent = msgs[Math.min(escalations - 1, msgs.length - 1)];
+  });
+
+  againBtn.addEventListener('click', function () {
+    outcome.style.display = 'none';
+    formCard.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+</script>
+</body>
+</html>
