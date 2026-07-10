@@ -57,10 +57,21 @@
 
   .layout { display: flex; gap: 22px; align-items: flex-start; }
   .col-main { flex: 1 1 0; min-width: 0; order: 1; }
-  .col-side { width: 370px; flex-shrink: 0; order: 2; }
+  .col-side {
+    width: 46%;
+    flex-shrink: 0;
+    order: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-content: start;
+  }
+  .col-side .card { margin-bottom: 0; }
+  .col-side .span2 { grid-column: 1 / -1; }
   @media (max-width: 940px) {
     .layout { display: block; }
-    .col-side { width: auto; }
+    .col-side { width: auto; display: block; }
+    .col-side .card { margin-bottom: 20px; }
   }
 
   .notice {
@@ -248,7 +259,7 @@
   <div class="layout">
   <aside class="col-side">
 
-  <div class="card">
+  <div class="card span2">
     <div class="card-head">Your Union Leadership</div>
     <img class="chain-img" src="assets/spaceghoast.png" alt="President Spaceghoast" style="width:100%;display:block">
     <div class="figcap">Fig. 3 &mdash; <strong>President Spaceghoast</strong>, elected head of BCU-69420,

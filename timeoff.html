@@ -62,10 +62,20 @@
 
   .layout { display: flex; gap: 22px; align-items: flex-start; }
   .col-main { flex: 1 1 0; min-width: 0; }
-  .col-side { width: 370px; flex-shrink: 0; }
+  .col-side {
+    width: 46%;
+    flex-shrink: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-content: start;
+  }
+  .col-side .card { margin-bottom: 0; }
+  .col-side .span2 { grid-column: 1 / -1; }
   @media (max-width: 940px) {
     .layout { display: block; }
-    .col-side { width: auto; }
+    .col-side { width: auto; display: block; }
+    .col-side .card { margin-bottom: 20px; }
   }
 
   .notice {
@@ -391,7 +401,7 @@
   </div>
   <aside class="col-side">
 
-  <div class="card">
+  <div class="card span2">
     <div class="card-head">Approval Chain <span style="font-weight:400;font-size:.7rem;color:#889">14 signatures required</span></div>
     <img class="chain-img" src="assets/worm.gif" alt="The full management approval chain">
     <div class="figcap">Fig. 1 &mdash; Your complete management approval chain. Each request must be approved
@@ -399,7 +409,7 @@
     Broccoli Chatter's Union, Local BCU-69420, and cannot be contacted during posting hours (all hours).</div>
   </div>
 
-  <div class="card">
+  <div class="card span2">
     <div class="card-head">Employee Recognition &amp; Wellness</div>
     <div class="card-body" style="display:flex;gap:18px;flex-wrap:wrap">
       <div style="flex:1;min-width:220px;text-align:center">
@@ -432,6 +442,16 @@
       </div>
     </div>
     <div class="figcap">Fig. C-1 &mdash; The gesture, mid-delivery. M'employee.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">Safety Training</div>
+    <div class="card-body" style="text-align:center">
+      <img src="assets/homer.png" alt="The employee, as depicted in training materials" style="width:100%;max-width:230px;border-radius:6px">
+    </div>
+    <div class="figcap">Fig. S-1 &mdash; For liability reasons, all Buttworm Heavy Industries training
+    materials depict the employee in cartoon form. Legal has confirmed the resemblance is coincidental.
+    Legal is the worm. D'oh is a registered trademark of somebody else's lawyers.</div>
   </div>
 
   </aside>
