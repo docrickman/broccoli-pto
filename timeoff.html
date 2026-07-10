@@ -402,6 +402,12 @@
           <span id="unionLine">In cooperation with the Broccoli Chatter's Union, BCU-69420</span>
         </div>
       </div>
+      <div id="reactionFig" style="margin-top:18px">
+        <img src="assets/mad.png" alt="Live employee reaction" style="max-width:230px;width:65%">
+        <div style="font-size:.68rem;color:#889;font-style:italic;margin-top:4px">Fig. R-1 &mdash; Live
+        employee reaction, captured automatically at the moment of denial. The webcam turns itself on
+        for this. That feature cannot be disabled. HR watches these back at the holiday party.</div>
+      </div>
       <div id="appealNote"></div>
       <div class="verdict-actions">
         <button class="btn secondary" id="appealBtn">File an Appeal</button>
@@ -549,6 +555,7 @@
       var pool = approved ? approvals : (buttworms ? buttwormDenials : denials);
       verdictReason.textContent = pool[Math.floor(Math.random() * pool.length)];
     }
+    document.getElementById('reactionFig').style.display = approved ? 'none' : 'block';
     ticketNo.textContent = ticket() + ' • resolved in 0.0002s';
     var name = (document.getElementById('empName').value || 'Valued Employee').trim();
     document.getElementById('signName').textContent = 'On behalf of ' + name + "'s better judgment";
