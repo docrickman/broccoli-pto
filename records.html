@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Broccoli Industries — HR Records Room</title>
+<title>Buttworm Heavy Industries — HR Records Room</title>
 <link rel="icon" type="image/webp" href="assets/face.webp">
 <style>
   :root {
@@ -52,7 +52,15 @@
     white-space: nowrap;
   }
   .nav a:hover { background: rgba(255,255,255,.28); }
-  .wrap { max-width: 820px; margin: 24px auto 80px; padding: 0 14px; }
+  .wrap { max-width: 1180px; margin: 24px auto 80px; padding: 0 14px; }
+
+  .layout { display: flex; gap: 22px; align-items: flex-start; }
+  .col-main { flex: 1 1 0; min-width: 0; }
+  .col-side { width: 360px; flex-shrink: 0; }
+  @media (max-width: 940px) {
+    .layout { display: block; }
+    .col-side { width: auto; }
+  }
 
   .notice {
     background: #fff8dc;
@@ -182,7 +190,7 @@
 <div class="topbar">
   <img src="assets/face.webp" alt="Records custodian">
   <div>
-    <h1>Broccoli Industries&trade; &mdash; HR Records Room</h1>
+    <h1>Buttworm Heavy Industries&trade; &mdash; HR Records Room</h1>
     <div class="sub">Permanent Complaint &amp; Grievance Archive &bull; retention policy: forever, out of spite</div>
   </div>
   <div class="nav">
@@ -200,6 +208,9 @@
     (emotionally). Records are maintained by the worm, who has read all of them and is keeping score.
     "Open" filings are still being processed emotionally. "Closed" filings achieved closure (rare).
   </div>
+
+  <div class="layout">
+  <div class="col-main">
 
   <div class="filters">
     <button data-filter="all" class="active">All Records</button>
@@ -221,7 +232,10 @@
     <a class="btn purple" href="complaints.html">File an HR complaint (streamers only)</a>
   </div>
 
-  <div class="record" style="margin-top:26px">
+  </div>
+  <aside class="col-side">
+
+  <div class="record">
     <div class="rec-head"><span class="badge misc">Business Continuity</span>
       <span class="rec-title">Borb Impact Preparedness Statement</span>
       <span class="status-chip open">Inbound</span>
@@ -254,10 +268,13 @@
     <div class="rec-foot">Filing #SEC-0031 &bull; footage enhanced 40x from an original resolution of "worse" &bull; do not approach the subject; he will explain the clip</div>
   </div>
 
+  </aside>
+  </div>
+
 </div>
 
 <footer>
-  Broccoli Industries&trade; Records Division &bull; "We Never Forget. We Never Forgive. We Never File Correctly."<br>
+  Buttworm Heavy Industries&trade; Records Division &bull; "We Never Forget. We Never Forgive. We Never File Correctly."<br>
   Filings are anonymous, instant, and permanent &bull; no account required &bull; the cabinet accepts new records only (nothing may be altered or removed, per the worm)
 </footer>
 

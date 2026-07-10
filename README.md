@@ -1,6 +1,6 @@
-# Broccoli Industries™ — Time Off Request Portal
+# Buttworm Heavy Industries™ — Time Off Request Portal
 
-The official employee self-service portal for Broccoli Industries' one (1) employee.
+The official employee self-service portal for Buttworm Heavy Industries' one (1) employee.
 
 Submit a time off request and have it carefully reviewed by all 14 layers of
 management (management is currently one organism, see Fig. 1).

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Broccoli Industries — HR Complaint Portal</title>
+<title>Buttworm Heavy Industries — HR Complaint Portal</title>
 <link rel="icon" type="image/webp" href="assets/face.webp">
 <style>
   :root {
@@ -53,7 +53,15 @@
     white-space: nowrap;
   }
   .topbar a.navlink:hover { background: rgba(255,255,255,.28); }
-  .wrap { max-width: 760px; margin: 24px auto 80px; padding: 0 14px; }
+  .wrap { max-width: 1140px; margin: 24px auto 80px; padding: 0 14px; }
+
+  .layout { display: flex; gap: 22px; align-items: flex-start; }
+  .col-main { flex: 1 1 0; min-width: 0; order: 1; }
+  .col-side { width: 370px; flex-shrink: 0; order: 2; }
+  @media (max-width: 940px) {
+    .layout { display: block; }
+    .col-side { width: auto; }
+  }
 
   .notice {
     background: #fff8dc;
@@ -90,8 +98,8 @@
   }
   .card-body { padding: 18px; }
 
-  .hr-team { display: flex; align-items: center; gap: 16px; }
-  .hr-team img.worm { width: 60%; min-width: 220px; }
+  .hr-team { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .hr-team img.worm { width: 100%; }
   .hr-team .desc { font-size: .8rem; color: #445; }
   .figcap { font-size: .7rem; color: #667; padding: 8px 14px 12px; font-style: italic; }
 
@@ -234,9 +242,9 @@
 <body>
 
 <div class="topbar">
-  <img src="assets/face.webp" alt="Broccoli Industries HR">
+  <img src="assets/face.webp" alt="Buttworm Heavy Industries HR">
   <div>
-    <h1>Broccoli Industries&trade; &mdash; HR Complaint Portal</h1>
+    <h1>Buttworm Heavy Industries&trade; &mdash; HR Complaint Portal</h1>
     <div class="sub">"Your Voice Matters (To Someone, Presumably)" &bull; Streamer Use Only &mdash; chatters, <a href="chatters.html" style="color:#fff">your union portal is here</a></div>
   </div>
   <div class="nav">
@@ -254,12 +262,15 @@
     filed as "Anonymous (Broccoli)". We guessed. There is only one employee.
   </div>
 
+  <div class="layout">
+  <aside class="col-side">
+
   <div class="card">
     <div class="card-head">Meet Your HR Department</div>
     <div class="card-body hr-team">
       <img class="worm" src="assets/worm.gif" alt="The HR department">
       <div class="desc">
-        Broccoli Industries maintains a fully staffed Human Resources department consisting of
+        Buttworm Heavy Industries maintains a fully staffed Human Resources department consisting of
         14 dedicated HR professionals (pictured). Due to a recent restructuring, HR is also
         management, a dues-paying member of the chatters' union (BCU-69420), and the subject of
         most complaints. The conflict of interest was investigated by the worm, who cleared the worm.
@@ -309,6 +320,9 @@
     <div class="figcap">Fig. JP-1 &mdash; The subject, caught in the act. John Pork declined to comment,
     though in fairness, nobody called him back either.</div>
   </div>
+
+  </aside>
+  <div class="col-main">
 
   <div class="card" id="formCard">
     <div class="card-head">File a Complaint <span style="font-weight:400;font-size:.7rem;color:#889">Form HR-1 (rev. never)</span></div>
@@ -364,7 +378,7 @@
         <div class="row">
           <label>Describe the Incident <span class="req">*</span></label>
           <textarea id="details" placeholder="Describe what happened. Be specific. HR will read this aloud to the accused, slowly, while maintaining eye contact with you." required></textarea>
-          <div class="hint">Note: incident descriptions become the property of Broccoli Industries and may be used as stream content.</div>
+          <div class="hint">Note: incident descriptions become the property of Buttworm Heavy Industries and may be used as stream content.</div>
         </div>
 
         <div class="row">
@@ -382,7 +396,7 @@
         <div class="row checks">
           <label><input type="checkbox" required> I understand that HR exists to protect the company, and I am not the company.</label>
           <label><input type="checkbox" required> I understand my complaint will be reviewed by the party it is about (org chart constraint, see Fig. 2).</label>
-          <label><input type="checkbox" required> I acknowledge that Broccoli Industries does not retaliate. Broccoli Industries pre-taliates.</label>
+          <label><input type="checkbox" required> I acknowledge that Buttworm Heavy Industries does not retaliate. Buttworm Heavy Industries pre-taliates.</label>
           <label><input type="checkbox" required> I waive my right to a resolution, an outcome, and closure (emotional).</label>
         </div>
 
@@ -408,7 +422,7 @@
         <div class="who">
           <div class="name">The HR Department</div>
           HR Business Partner (all 14, simultaneously)<br>
-          Broccoli Industries&trade; Human Resources<br>
+          Buttworm Heavy Industries&trade; Human Resources<br>
           <span style="color:#889">Also the accused, in most cases</span>
         </div>
       </div>
@@ -421,10 +435,13 @@
       <p style="font-size:.72rem;color:#556;margin-top:10px" id="fileNote">"Enter Into Permanent Record"
       archives this determination in the public <a href="records.html">Records Room</a> &mdash; instantly,
       anonymously, forever &mdash; where the worm will re-read it annually.</p>
-      <p class="fineprint">Broccoli Industries takes all complaints seriously, holds them close,
+      <p class="fineprint">Buttworm Heavy Industries takes all complaints seriously, holds them close,
       and never lets them go anywhere. Complaints are retained forever and forwarded to the accused
       within 0.0002s as a professional courtesy. This portal is monitored by the worm. The worm says hi.</p>
     </div>
+  </div>
+
+  </div>
   </div>
 
 </div>
@@ -442,7 +459,7 @@
 </div>
 
 <footer>
-  Broccoli Industries&trade; &bull; "Every Complaint Is a Gift (Which We Regift to the Accused)"<br>
+  Buttworm Heavy Industries&trade; &bull; "Every Complaint Is a Gift (Which We Regift to the Accused)"<br>
   Need time off to recover from this experience? <a href="timeoff.html">Request it here.</a> (It will be denied.)
   All portals: <a href="index.html">Services Gateway</a>.
 </footer>
@@ -571,7 +588,7 @@
     var category = document.getElementById('category').value;
     var details = document.getElementById('details').value.trim();
     var body = [
-      '**Filed via:** Broccoli Industries HR Complaint Portal (Streamer Use Only)',
+      '**Filed via:** Buttworm Heavy Industries HR Complaint Portal (Streamer Use Only)',
       '**Complainant:** Anonymous (' + name + ')',
       '**Against:** ' + against,
       '**Category:** ' + category,

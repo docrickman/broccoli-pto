@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Broccoli Industries — Time Off Request Portal</title>
+<title>Buttworm Heavy Industries — Time Off Request Portal</title>
 <link rel="icon" type="image/webp" href="assets/face.webp">
 <style>
   :root {
@@ -58,7 +58,15 @@
     white-space: nowrap;
   }
   .topbar a.navlink:hover { background: rgba(255,255,255,.28); }
-  .wrap { max-width: 760px; margin: 24px auto 80px; padding: 0 14px; }
+  .wrap { max-width: 1140px; margin: 24px auto 80px; padding: 0 14px; }
+
+  .layout { display: flex; gap: 22px; align-items: flex-start; }
+  .col-main { flex: 1 1 0; min-width: 0; }
+  .col-side { width: 370px; flex-shrink: 0; }
+  @media (max-width: 940px) {
+    .layout { display: block; }
+    .col-side { width: auto; }
+  }
 
   .notice {
     background: #fff8dc;
@@ -221,9 +229,9 @@
 <body>
 
 <div class="topbar">
-  <img src="assets/face.webp" alt="Broccoli Industries logo">
+  <img src="assets/face.webp" alt="Buttworm Heavy Industries logo">
   <div>
-    <h1>Broccoli Industries&trade; &mdash; Employee Self-Service</h1>
+    <h1>Buttworm Heavy Industries&trade; &mdash; Employee Self-Service</h1>
     <div class="sub">Time Off Request Portal &bull; HR-OS v2.4.1 (unpatched since 2019)</div>
   </div>
   <span class="envbadge">PRODUCTION</span>
@@ -240,6 +248,9 @@
     currently experiencing delays of up to <strong>forever</strong>. Thank you for your patience,
     which is mandatory.
   </div>
+
+  <div class="layout">
+  <div class="col-main">
 
   <div class="card">
     <div class="card-head">Your Leave Balances</div>
@@ -260,32 +271,6 @@
         <div class="note">*may not be used on days ending in "y"</div>
       </div>
     </div>
-  </div>
-
-  <div class="card">
-    <div class="card-head">Employee Recognition &amp; Wellness</div>
-    <div class="card-body" style="display:flex;gap:18px;flex-wrap:wrap">
-      <div style="flex:1;min-width:220px;text-align:center">
-        <img src="assets/broccoli.gif" alt="Employee of the Month" style="width:100%;max-width:260px;border-radius:6px">
-        <div style="font-size:.72rem;color:#667;font-style:italic;margin-top:8px">Fig. W-1 &mdash; Employee of the
-        Month: <strong>Broccoli</strong> (BROC-0001), 47 consecutive months. There are no other candidates.
-        Prize: continued employment.</div>
-      </div>
-      <div style="flex:1;min-width:220px;text-align:center">
-        <img src="assets/bald-broc.png" alt="The Wellness Program" style="width:100%;max-width:260px;border-radius:6px">
-        <div style="font-size:.72rem;color:#667;font-style:italic;margin-top:8px">Fig. W-2 &mdash; The Employee
-        Wellness Program: in lieu of any approved leave, employees receive one (1) glass of chocolate milk.
-        The milk is a Fairlife&reg;. The hair was traded for it. This counts as your vacation.</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-head">Approval Chain <span style="font-weight:400;font-size:.7rem;color:#889">14 signatures required</span></div>
-    <img class="chain-img" src="assets/worm.gif" alt="The full management approval chain">
-    <div class="figcap">Fig. 1 &mdash; Your complete management approval chain. Each request must be approved
-    unanimously. Management is currently one (1) organism. Segments 2&ndash;13 are represented by the
-    Broccoli Chatter's Union, Local BCU-69420, and cannot be contacted during posting hours (all hours).</div>
   </div>
 
   <div class="card" id="formCard">
@@ -371,23 +356,6 @@
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-head">Denial Concierge Service <span style="font-weight:400;font-size:.7rem;color:#889">complimentary &bull; mandatory</span></div>
-    <div class="card-body" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
-      <img src="assets/mlady.png" alt="The Chief Experience Officer, tipping his hat" style="flex:1;min-width:200px;max-width:250px">
-      <div style="flex:2;min-width:220px;font-size:.8rem;color:#445">
-        Upon receipt of your denial, the Chief Experience Officer (pictured) will personally tip his
-        hat to you, once.
-        <br><br>
-        The hat tip is your severance package, your formal apology, and your annual performance
-        review. It cannot be exchanged, declined, or un-seen. Employees report the gesture as
-        "somehow worse than the denial," which the Experience department has framed and hung in
-        the break room as a testimonial.
-      </div>
-    </div>
-    <div class="figcap">Fig. C-1 &mdash; The gesture, mid-delivery. M'employee.</div>
-  </div>
-
   <div class="card" id="verdict">
     <div class="card-head">Request Status <span id="ticketNo" style="font-weight:400;font-size:.7rem;color:#889"></span></div>
     <div class="verdict-body">
@@ -398,7 +366,7 @@
         <div class="who">
           <div class="name" id="signName">B. Industries</div>
           Chief Approval Officer &amp; All 14 Managers<br>
-          Broccoli Industries&trade; Human Resources<br>
+          Buttworm Heavy Industries&trade; Human Resources<br>
           <span id="unionLine">In cooperation with the Broccoli Chatter's Union, BCU-69420</span>
         </div>
       </div>
@@ -420,6 +388,55 @@
     </div>
   </div>
 
+  </div>
+  <aside class="col-side">
+
+  <div class="card">
+    <div class="card-head">Approval Chain <span style="font-weight:400;font-size:.7rem;color:#889">14 signatures required</span></div>
+    <img class="chain-img" src="assets/worm.gif" alt="The full management approval chain">
+    <div class="figcap">Fig. 1 &mdash; Your complete management approval chain. Each request must be approved
+    unanimously. Management is currently one (1) organism. Segments 2&ndash;13 are represented by the
+    Broccoli Chatter's Union, Local BCU-69420, and cannot be contacted during posting hours (all hours).</div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">Employee Recognition &amp; Wellness</div>
+    <div class="card-body" style="display:flex;gap:18px;flex-wrap:wrap">
+      <div style="flex:1;min-width:220px;text-align:center">
+        <img src="assets/broccoli.gif" alt="Employee of the Month" style="width:100%;max-width:260px;border-radius:6px">
+        <div style="font-size:.72rem;color:#667;font-style:italic;margin-top:8px">Fig. W-1 &mdash; Employee of the
+        Month: <strong>Broccoli</strong> (BROC-0001), 47 consecutive months. There are no other candidates.
+        Prize: continued employment.</div>
+      </div>
+      <div style="flex:1;min-width:220px;text-align:center">
+        <img src="assets/bald-broc.png" alt="The Wellness Program" style="width:100%;max-width:260px;border-radius:6px">
+        <div style="font-size:.72rem;color:#667;font-style:italic;margin-top:8px">Fig. W-2 &mdash; The Employee
+        Wellness Program: in lieu of any approved leave, employees receive one (1) glass of chocolate milk.
+        The milk is a Fairlife&reg;. The hair was traded for it. This counts as your vacation.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">Denial Concierge Service <span style="font-weight:400;font-size:.7rem;color:#889">complimentary &bull; mandatory</span></div>
+    <div class="card-body" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+      <img src="assets/mlady.png" alt="The Chief Experience Officer, tipping his hat" style="flex:1;min-width:200px;max-width:250px">
+      <div style="flex:2;min-width:220px;font-size:.8rem;color:#445">
+        Upon receipt of your denial, the Chief Experience Officer (pictured) will personally tip his
+        hat to you, once.
+        <br><br>
+        The hat tip is your severance package, your formal apology, and your annual performance
+        review. It cannot be exchanged, declined, or un-seen. Employees report the gesture as
+        "somehow worse than the denial," which the Experience department has framed and hung in
+        the break room as a testimonial.
+      </div>
+    </div>
+    <div class="figcap">Fig. C-1 &mdash; The gesture, mid-delivery. M'employee.</div>
+  </div>
+
+  </aside>
+  </div>
+
 </div>
 
 <div class="overlay" id="overlay">
@@ -435,7 +452,7 @@
 </div>
 
 <footer>
-  Broccoli Industries&trade; &bull; "We Take Your Requests Seriously (Into Consideration (Briefly))"<br>
+  Buttworm Heavy Industries&trade; &bull; "We Take Your Requests Seriously (Into Consideration (Briefly))"<br>
   HR-OS v2.4.1 &bull; This portal is best viewed on a work computer, during work hours, while working.<br>
   Unhappy with a decision? <a href="complaints.html" style="color:#1a4d8f">File an HR complaint.</a> (HR is the worm.)<br>
   Chatters: lodge grievances against management at the <a href="chatters.html" style="color:#1a4d8f">BCU-69420 union portal</a>.

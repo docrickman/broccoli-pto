@@ -53,7 +53,15 @@
     white-space: nowrap;
   }
   .nav a:hover { background: rgba(255,255,255,.28); }
-  .wrap { max-width: 760px; margin: 24px auto 80px; padding: 0 14px; }
+  .wrap { max-width: 1140px; margin: 24px auto 80px; padding: 0 14px; }
+
+  .layout { display: flex; gap: 22px; align-items: flex-start; }
+  .col-main { flex: 1 1 0; min-width: 0; order: 1; }
+  .col-side { width: 370px; flex-shrink: 0; order: 2; }
+  @media (max-width: 940px) {
+    .layout { display: block; }
+    .col-side { width: auto; }
+  }
 
   .notice {
     background: #eaf5ea;
@@ -85,8 +93,8 @@
   }
   .card-body { padding: 18px; }
 
-  .union-intro { display: flex; align-items: center; gap: 16px; }
-  .union-intro img.worm { width: 55%; min-width: 220px; }
+  .union-intro { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .union-intro img.worm { width: 100%; }
   .union-intro .desc { font-size: .8rem; color: #445; }
   .figcap { font-size: .7rem; color: #667; padding: 8px 14px 12px; font-style: italic; }
 
@@ -237,6 +245,9 @@
     Every time. That is the whole point of the Union.
   </div>
 
+  <div class="layout">
+  <aside class="col-side">
+
   <div class="card">
     <div class="card-head">Your Union Leadership</div>
     <img class="chain-img" src="assets/spaceghoast.png" alt="President Spaceghoast" style="width:100%;display:block">
@@ -247,7 +258,7 @@
       <img class="worm" src="assets/worm.gif" alt="The worm, member in good standing">
       <div class="desc">
         <strong>Also pictured:</strong> the worm &mdash; dues-paying member in good standing of
-        BCU-69420 <em>and</em>, simultaneously, the entire HR department of Broccoli Industries.
+        BCU-69420 <em>and</em>, simultaneously, the entire HR department of Buttworm Heavy Industries.
         The Union investigated this conflict of interest and the investigation was conducted by
         the worm, who cleared the worm.
         <br><br>
@@ -288,6 +299,9 @@
     </div>
     <div class="figcap">Exhibit A &mdash; "dude i will beat your ass to a pulp." Preserved at 91% condition, like his weapon. Unlike his reputation.</div>
   </div>
+
+  </aside>
+  <div class="col-main">
 
   <div class="card" id="formCard">
     <div class="card-head">File a Grievance Against the Streamer <span style="font-weight:400;font-size:.7rem;color:#889">Form BCU-1 (ratified in space)</span></div>
@@ -403,6 +417,9 @@
       cannot be appealed to, located, or perceived. BCU-69420 is not responsible for outcomes,
       remedies, or the worm.</p>
     </div>
+  </div>
+
+  </div>
   </div>
 
 </div>
