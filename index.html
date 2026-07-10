@@ -129,6 +129,28 @@
   .portal.rec .enter { background: var(--records-gray); }
   .portal.rec:hover .enter { background: var(--records-gray-dark); }
 
+  .borb-advisory {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #2b1414;
+    border: 1px solid #7a2e2e;
+    border-left: 6px solid #c0392b;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+    color: #f3dede;
+    font-size: .8rem;
+    line-height: 1.5;
+  }
+  .borb-advisory img {
+    width: 180px;
+    max-width: 35%;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .borb-advisory strong { color: #ff9c8a; letter-spacing: .5px; }
+
   .helpdesk {
     margin-top: 26px;
     background: #fff8dc;
@@ -165,10 +187,21 @@
     <p>All portals are monitored by the worm. The worm is glad you're here.</p>
   </div>
 
+  <div class="borb-advisory">
+    <img src="assets/borb.png" alt="The Borb, inbound">
+    <div class="borb-text">
+      <strong>&#9888; BORB ADVISORY &mdash; ELEVATED:</strong> A Borb (pictured, inbound) has been
+      sighted on final approach. Broccoli Industries wishes to reassure all personnel that portals
+      will remain open during impact, deadlines remain in effect, and the Borb has been asked to
+      aim for the PTO department. Impact does not constitute time off. Time off requests citing
+      the Borb will be denied (see: all requests).
+    </div>
+  </div>
+
   <div class="grid">
 
     <a class="portal pto" href="timeoff.html">
-      <div class="thumb"><img src="assets/face.webp" alt="Time Off Portal"></div>
+      <div class="thumb"><img src="assets/broccoli.gif" alt="Time Off Portal"></div>
       <div class="body">
         <span class="who">For Broccoli (the employee)</span>
         <h3>Time Off Request Portal</h3>
