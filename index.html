@@ -251,7 +251,8 @@
     <div class="card-head">Approval Chain <span style="font-weight:400;font-size:.7rem;color:#889">14 signatures required</span></div>
     <img class="chain-img" src="assets/worm.gif" alt="The full management approval chain">
     <div class="figcap">Fig. 1 &mdash; Your complete management approval chain. Each request must be approved
-    unanimously. Management is currently one (1) organism.</div>
+    unanimously. Management is currently one (1) organism. Segments 2&ndash;13 are represented by the
+    Broccoli Chatter's Union, Local BCU-69420, and cannot be contacted during posting hours (all hours).</div>
   </div>
 
   <div class="card" id="formCard">
@@ -283,9 +284,11 @@
           </div>
           <div>
             <label>Leave Type <span class="req">*</span></label>
-            <select required>
+            <select id="leaveType" required>
               <option>Vacation</option>
               <option>Sick (proof of illness + illness itself required)</option>
+              <option>Buttworms (HR asks that you do not elaborate)</option>
+              <option>Sweetie Cutie Yard Time</option>
               <option>Touching Grass (experimental)</option>
               <option>New Game Release (auto-denied)</option>
               <option>Jury Duty (we will check)</option>
@@ -344,7 +347,8 @@
         <div class="who">
           <div class="name" id="signName">B. Industries</div>
           Chief Approval Officer &amp; All 14 Managers<br>
-          Broccoli Industries&trade; Human Resources
+          Broccoli Industries&trade; Human Resources<br>
+          <span id="unionLine">In cooperation with the Broccoli Chatter's Union, BCU-69420</span>
         </div>
       </div>
       <div id="appealNote"></div>
@@ -403,6 +407,8 @@
     'Vol. IV not found. Improvising…',
     'Escalating to middle management…',
     'Escalating to the middle of middle management…',
+    'Notifying the Broccoli Chatter\'s Union (BCU-69420)…',
+    'BCU-69420 is caucusing…',
     'Manager 7 of 14 reviewing (he is a segment)…',
     'Cross-referencing your dates against vibes…',
     'Calculating how personally to take this…',
@@ -422,7 +428,17 @@
     'Request received outside the approved window for receiving requests (the window is painted shut).',
     'The approval chain reviewed your request and ate it. A replacement form has been denied on your behalf.',
     'Your request was approved unanimously, but the ink used to sign it is on backorder until Q3 2031.',
-    'Time off implies time on, which implies time, which Legal has advised us not to acknowledge.'
+    'Time off implies time on, which implies time, which Legal has advised us not to acknowledge.',
+    'The Broccoli Chatter\'s Union (BCU-69420) has filed a grievance against your request. The grievance was approved. Your request was not.',
+    'Per the collective bargaining agreement with BCU-69420, chatters are guaranteed a streamer. You are the streamer. Do the math.',
+    'BCU-69420 voted 12–0 against, with segments 1 and 14 abstaining (they are the head and are legally you).'
+  ];
+
+  var buttwormDenials = [
+    'Your buttworms claim has been forwarded to the worm (Fig. 1) for a conflict-of-interest review. Denied pending its recusal, which it has declined.',
+    'Buttworms are classified as dependents, not an illness. Please add them to your health plan during open enrollment.',
+    'Per company policy, buttworms are a pre-existing condition and are therefore considered part of your job.',
+    'BCU-69420 has moved to unionize your buttworms. Until negotiations conclude, they are required to report to work with you.'
   ];
 
   var approvals = [
@@ -462,11 +478,22 @@
   function showVerdict() {
     appeals = 0;
     appealNote.textContent = '';
-    var approved = Math.random() < 0.05;
+    var leave = document.getElementById('leaveType').value;
+    var yardTime = leave.indexOf('Sweetie Cutie') === 0;
+    var buttworms = leave.indexOf('Buttworms') === 0;
+    var approved = yardTime || Math.random() < 0.05;
     stampEl.textContent = approved ? 'Approved*' : 'Denied';
     stampEl.className = 'stamp' + (approved ? ' ok' : '');
-    var pool = approved ? approvals : denials;
-    verdictReason.textContent = pool[Math.floor(Math.random() * pool.length)];
+    if (yardTime) {
+      verdictReason.textContent = 'APPROVED by emergency unanimous vote of the Broccoli Chatter\'s ' +
+        'Union (BCU-69420), who consider Sweetie Cutie Yard Time a protected activity. ' +
+        '*This approval is contingent upon the delivery of one (1) Soju Saturday stream. ' +
+        'Failure to deliver will convert this approval into a retroactive denial and the ' +
+        'yard time will be billed back at the prevailing worm rate.';
+    } else {
+      var pool = approved ? approvals : (buttworms ? buttwormDenials : denials);
+      verdictReason.textContent = pool[Math.floor(Math.random() * pool.length)];
+    }
     ticketNo.textContent = ticket() + ' • resolved in 0.0002s';
     var name = (document.getElementById('empName').value || 'Valued Employee').trim();
     document.getElementById('signName').textContent = 'On behalf of ' + name + "'s better judgment";
