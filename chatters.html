@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BCU-69420 — Member Grievance Portal</title>
+<link rel="icon" type="image/webp" href="assets/face.webp">
+<style>
+  :root {
+    --bcu-green: #2e7d32;
+    --bcu-green-dark: #1b5e20;
+    --bcu-gold: #c9a227;
+    --corp-gray: #f0f2f5;
+    --border: #c8cdd4;
+    --deny-red: #c0392b;
+    --approve-green: #1e8449;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    background: var(--corp-gray);
+    color: #222;
+    min-height: 100vh;
+  }
+  .topbar {
+    background: linear-gradient(180deg, var(--bcu-green), var(--bcu-green-dark));
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+    border-bottom: 3px solid var(--bcu-gold);
+  }
+  .topbar img {
+    height: 46px; width: 46px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--bcu-gold);
+    object-fit: cover;
+  }
+  .topbar h1 { font-size: 1.15rem; font-weight: 600; }
+  .topbar .sub { font-size: .72rem; opacity: .8; }
+  .nav { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+  .nav a {
+    color: #fff;
+    font-size: .72rem;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.4);
+    padding: 5px 10px;
+    border-radius: 3px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .nav a:hover { background: rgba(255,255,255,.28); }
+  .wrap { max-width: 760px; margin: 24px auto 80px; padding: 0 14px; }
+
+  .notice {
+    background: #eaf5ea;
+    border: 1px solid #a8d5aa;
+    border-left: 5px solid var(--bcu-green);
+    padding: 10px 14px;
+    font-size: .8rem;
+    margin-bottom: 18px;
+    border-radius: 3px;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .card-head {
+    background: #fafbfc;
+    border-bottom: 1px solid var(--border);
+    padding: 12px 18px;
+    font-weight: 600;
+    font-size: .95rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .card-body { padding: 18px; }
+
+  .union-intro { display: flex; align-items: center; gap: 16px; }
+  .union-intro img.worm { width: 55%; min-width: 220px; }
+  .union-intro .desc { font-size: .8rem; color: #445; }
+  .figcap { font-size: .7rem; color: #667; padding: 8px 14px 12px; font-style: italic; }
+
+  form .row { margin-bottom: 15px; }
+  label { display: block; font-size: .8rem; font-weight: 600; margin-bottom: 4px; color: #334; }
+  label .req { color: var(--deny-red); }
+  input[type=text], select, textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: .9rem;
+    font-family: inherit;
+    background: #fff;
+  }
+  select:disabled { background: #eef0f2; color: #556; }
+  textarea { resize: vertical; min-height: 90px; }
+  .hint { font-size: .68rem; color: #778; margin-top: 3px; }
+  .two-col { display: flex; gap: 14px; }
+  .two-col > div { flex: 1; }
+
+  .sev-row { display: flex; align-items: center; gap: 12px; }
+  .sev-row input[type=range] { flex: 1; accent-color: var(--bcu-green); }
+  .sev-label { font-size: .78rem; font-weight: 700; color: var(--bcu-green-dark); min-width: 200px; }
+
+  .checks { font-size: .78rem; }
+  .checks label { display: flex; gap: 8px; font-weight: 400; margin-bottom: 8px; align-items: flex-start; cursor: pointer; }
+  .checks input { margin-top: 2px; }
+
+  .btn {
+    background: var(--bcu-green);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 11px 26px;
+    font-size: .95rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn:hover { background: var(--bcu-green-dark); }
+  .btn.secondary { background: #fff; color: var(--bcu-green-dark); border: 1px solid var(--bcu-green); }
+  .btn.gold { background: var(--bcu-gold); color: #201a00; }
+  .btn.gold:hover { background: #af8c1d; }
+
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(14, 38, 18, .93);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+  }
+  .overlay.show { display: flex; }
+  .overlay .box { text-align: center; color: #fff; max-width: 520px; padding: 20px; }
+  .overlay img { max-width: 320px; width: 80%; border-radius: 8px; background: #fff; }
+  .overlay .status { margin-top: 18px; font-size: 1rem; min-height: 1.4em; }
+  .overlay .pct { font-size: .75rem; opacity: .7; margin-top: 6px; }
+
+  #outcome { display: none; }
+  .stamp {
+    display: inline-block;
+    font-size: 2.2rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    color: var(--approve-green);
+    border: 6px solid var(--approve-green);
+    border-radius: 8px;
+    padding: 6px 22px;
+    transform: rotate(-8deg);
+    text-transform: uppercase;
+    animation: stampIn .3s cubic-bezier(.2, 2.5, .5, 1);
+    margin: 10px 0 16px;
+  }
+  .stamp.bad { color: var(--deny-red); border-color: var(--deny-red); }
+  @keyframes stampIn {
+    from { transform: rotate(-8deg) scale(3); opacity: 0; }
+    to   { transform: rotate(-8deg) scale(1); opacity: 1; }
+  }
+  .outcome-body { text-align: center; padding: 26px 18px; }
+  .outcome-reason { font-size: .95rem; max-width: 540px; margin: 0 auto 20px; color: #333; }
+
+  .signoff {
+    display: flex; align-items: center; gap: 12px;
+    justify-content: center; margin: 18px 0 6px;
+  }
+  .signoff img { height: 64px; width: 64px; object-fit: contain; }
+  .signoff .who { text-align: left; font-size: .78rem; color: #445; }
+  .signoff .who .name { font-family: "Segoe Script", "Comic Sans MS", cursive; font-size: 1.15rem; color: #123; }
+  .fineprint { font-size: .62rem; color: #99a; max-width: 480px; margin: 14px auto 0; }
+  .outcome-actions { margin-top: 18px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .file-note { font-size: .72rem; color: #556; margin-top: 10px; }
+
+  footer {
+    text-align: center;
+    font-size: .65rem;
+    color: #99a;
+    padding: 20px;
+  }
+  footer a { color: var(--bcu-green-dark); }
+  .marquee-wrap {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    pointer-events: none;
+    z-index: 40;
+    overflow: hidden;
+    height: 120px;
+    display: none;
+  }
+  .marquee-wrap img {
+    position: absolute;
+    bottom: 0;
+    height: 110px;
+    left: -260px;
+    animation: crawl 14s linear infinite;
+  }
+  @keyframes crawl {
+    from { left: -260px; }
+    to   { left: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <img src="assets/face.webp" alt="BCU-69420">
+  <div>
+    <h1>Broccoli Chatter's Union, Local BCU-69420</h1>
+    <div class="sub">Member Grievance Portal &bull; "An Injury to One Chatter Is Content for All"</div>
+  </div>
+  <div class="nav">
+    <a href="records.html">Records Room</a>
+    <a href="index.html">Time Off Portal</a>
+    <a href="complaints.html">Streamer HR Portal</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="notice">
+    <strong>Solidarity Notice:</strong> This portal is for dues-paying members of BCU-69420 to file
+    grievances against <strong>management</strong> (Broccoli, the streamer). Unlike the company's
+    so-called "HR department" (a worm), the Union finds in favor of its members. Every time. That is
+    the whole point of the Union.
+  </div>
+
+  <div class="card">
+    <div class="card-head">Your Union Representation</div>
+    <div class="card-body union-intro">
+      <img class="worm" src="assets/worm.gif" alt="Union leadership, segments 2-13">
+      <div class="desc">
+        Segments 2&ndash;13 (pictured, center) proudly represent all chatters of the Broccoli
+        broadcast. Note that segments 1 and 14 are management and are only here because the
+        organism cannot be separated without a vote.
+        <br><br>
+        <strong>Dues:</strong> one (1) message per stream, or continued lurking in good standing.
+      </div>
+    </div>
+    <div class="figcap">Fig. 3 &mdash; Union leadership arriving at the bargaining table.</div>
+  </div>
+
+  <div class="card" id="formCard">
+    <div class="card-head">File a Grievance Against Management <span style="font-weight:400;font-size:.7rem;color:#889">Form BCU-1 (ratified 12&ndash;0)</span></div>
+    <div class="card-body">
+      <form id="bcuForm">
+        <div class="two-col row">
+          <div>
+            <label>Union Member Name (chat handle) <span class="req">*</span></label>
+            <input type="text" id="memberName" placeholder="e.g. zomboid_enjoyer_420" required>
+          </div>
+          <div>
+            <label>Dues Status <span class="req">*</span></label>
+            <select id="dues" required>
+              <option>Paid in full (subscribed)</option>
+              <option>In arrears (following only)</option>
+              <option>Lifetime exempt (moderator)</option>
+              <option>Scab (watches on mute, logged out)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="two-col row">
+          <div>
+            <label>Grievance Against <span class="req">*</span></label>
+            <select disabled>
+              <option>Broccoli (the streamer / management)</option>
+            </select>
+            <div class="hint">Locked. There is only one employer. That is the tragedy of it.</div>
+          </div>
+          <div>
+            <label>Grievance Category <span class="req">*</span></label>
+            <select id="category" required>
+              <option>Died to the same zombie twice (avoidable)</option>
+              <option>Stream started 45 minutes late ("technical issues")</option>
+              <option>Skipped my perfectly good suggestion</option>
+              <option>Read my message in a weird voice</option>
+              <option>Rage-quit while I was mid-clip</option>
+              <option>Went to bed at a "reasonable hour" (weak)</option>
+              <option>No Soju Saturday in living memory</option>
+              <option>Blamed chat for his own death (we said nothing)</option>
+              <option>Looted a whole town and kept the good spawns for himself</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <label>Severity <span class="req">*</span></label>
+          <div class="sev-row">
+            <input type="range" id="severity" min="0" max="4" value="2">
+            <span class="sev-label" id="sevLabel">Emote Strike (disapproving emotes only)</span>
+          </div>
+        </div>
+
+        <div class="row">
+          <label>Describe the Incident <span class="req">*</span></label>
+          <textarea id="details" placeholder="State what management did. The Union believes you already." required></textarea>
+          <div class="hint">Exaggeration is permitted and, per the bylaws, encouraged.</div>
+        </div>
+
+        <div class="row">
+          <label>Demanded Remedy <span class="req">*</span></label>
+          <select id="remedy" required>
+            <option value="">-- Select what management owes you --</option>
+            <option>Public apology, on stream, camera on</option>
+            <option>One (1) Soju Saturday stream</option>
+            <option>Sweetie Cutie Yard Time (supervised; we will watch)</option>
+            <option>Re-do the death, with witnesses this time</option>
+            <option>Financial compensation (channel points)</option>
+            <option>He has to say "chat was right" and mean it</option>
+          </select>
+        </div>
+
+        <div class="row checks">
+          <label><input type="checkbox" required> I affirm this grievance is filed in solidarity, spite, or both.</label>
+          <label><input type="checkbox" required> I understand the Union will find in my favor regardless of the facts.</label>
+          <label><input type="checkbox" required> I acknowledge segments 1 and 14 may recuse themselves (they are legally the streamer).</label>
+          <label><input type="checkbox" required> I agree my grievance may be entered into the permanent public record (the Records Room).</label>
+        </div>
+
+        <button type="submit" class="btn">File Grievance</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card" id="outcome">
+    <div class="card-head">Grievance Ruling <span id="caseNo" style="font-weight:400;font-size:.7rem;color:#889"></span></div>
+    <div class="outcome-body">
+      <div class="stamp" id="stampEl">Upheld</div>
+      <p class="outcome-reason" id="outcomeReason"></p>
+      <div class="signoff">
+        <img src="assets/face.webp" alt="Union steward">
+        <div class="who">
+          <div class="name">Segments 2&ndash;13</div>
+          Executive Grievance Committee<br>
+          Broccoli Chatter's Union, Local BCU-69420<br>
+          <span style="color:#889">Vote: 12&ndash;0 (segments 1 and 14 recused)</span>
+        </div>
+      </div>
+      <div class="outcome-actions">
+        <a class="btn gold" id="fileBtn" href="#" target="_blank" rel="noopener">Enter Into Permanent Record &rarr;</a>
+        <a class="btn secondary" href="records.html">View the Records Room</a>
+        <button class="btn" id="againBtn">File Another Grievance</button>
+      </div>
+      <p class="file-note">"Enter Into Permanent Record" opens a pre-written filing on GitHub &mdash;
+      hit <strong>Submit new issue</strong> there and your grievance is archived forever in the
+      <a href="records.html">Records Room</a>. (Requires a GitHub account. The Union apologizes for the
+      paperwork. The Union blames management.)</p>
+      <p class="fineprint">Rulings of the Executive Grievance Committee are final, unanimous, and
+      reached before the grievance is read. Management's side of the story was requested as a
+      formality and discarded unread. BCU-69420 is not responsible for outcomes, remedies, or the worm.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="box">
+    <img src="assets/bounce.gif" alt="The committee deliberating">
+    <div class="status" id="statusText">Convening emergency session&hellip;</div>
+    <div class="pct" id="pctText">0% complete</div>
+  </div>
+</div>
+
+<div class="marquee-wrap" id="marquee">
+  <img src="assets/worm.gif" alt="">
+</div>
+
+<footer>
+  Broccoli Chatter's Union, Local BCU-69420 &bull; "The Chat, United, Will Never Be Muted"<br>
+  Are you management? Your portals are <a href="index.html">over</a> <a href="complaints.html">there</a>.
+  Browse all filings in the <a href="records.html">Records Room</a>.
+</footer>
+
+<script>
+(function () {
+  var REPO = 'docrickman/broccoli-pto';
+  var form = document.getElementById('bcuForm');
+  var overlay = document.getElementById('overlay');
+  var statusText = document.getElementById('statusText');
+  var pctText = document.getElementById('pctText');
+  var outcome = document.getElementById('outcome');
+  var stampEl = document.getElementById('stampEl');
+  var outcomeReason = document.getElementById('outcomeReason');
+  var caseNo = document.getElementById('caseNo');
+  var againBtn = document.getElementById('againBtn');
+  var fileBtn = document.getElementById('fileBtn');
+  var marquee = document.getElementById('marquee');
+  var formCard = document.getElementById('formCard');
+  var sev = document.getElementById('severity');
+  var sevLabel = document.getElementById('sevLabel');
+
+  var sevLabels = [
+    'Noted in the Minutes',
+    'Formal Harrumph',
+    'Emote Strike (disapproving emotes only)',
+    'Work-to-Rule (lurking, no messages)',
+    'GENERAL STRIKE (unfollow threatened, not performed)'
+  ];
+  sev.addEventListener('input', function () { sevLabel.textContent = sevLabels[sev.value]; });
+
+  var steps = [
+    'Convening emergency session of BCU-69420…',
+    'Achieving quorum (12 of 14 segments)…',
+    'Segments 1 and 14 escorted out (they are management)…',
+    'Reading your grievance aloud to applause…',
+    'Motion to be mad on your behalf: seconded…',
+    'Motion carried, 12–0…',
+    'Notifying management (he is live, he can\'t stop us)…',
+    'Management has responded: "chat is being so weird about this"…',
+    'Entering response into evidence (against him)…',
+    'Drafting ruling in your favor…',
+    'Adding a remedy the committee also wanted anyway…',
+    'Ratifying. Solidarity intensifies…'
+  ];
+
+  var upholds = [
+    'The Committee finds management GUILTY as charged, guilty in spirit, and guilty of several things not in the filing but which the Committee remembered while deliberating.',
+    'Grievance UPHELD. Management\'s defense ("that\'s not what happened") was reviewed and found to be exactly what a guilty streamer would say.',
+    'UPHELD, 12–0. The Committee wishes to note it has never seen a braver grievance, and that management\'s behavior has been entered into the Big List (Vol. II — Vol. I is full).',
+    'The Union finds for the member in all particulars. Management is reminded that "it\'s my stream" is not a legal defense and never has been.',
+    'UPHELD with commendation. Your grievance was read into the record twice — once for procedure, once because it was funny.',
+    'Grievance UPHELD. As management previously ruled that time off implies time on, the Committee rules his objection implies his guilt. His own policy. Delicious.'
+  ];
+
+  var scabRuling = 'Grievance DISMISSED without prejudice. Committee records indicate the member watches on mute, logged out. The Union cannot represent what it cannot see in chat. Pay your dues (one message) and refile — the Committee will then find in your favor with enthusiasm.';
+
+  function caseNum() {
+    return 'Grievance #BCU-' + String(Math.floor(Math.random() * 90000) + 10000);
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    overlay.classList.add('show');
+    marquee.style.display = 'block';
+    var i = 0;
+    statusText.textContent = steps[0];
+    pctText.textContent = '0% complete';
+    var timer = setInterval(function () {
+      i++;
+      if (i < steps.length) {
+        statusText.textContent = steps[i];
+        var pct = Math.round((i / steps.length) * 100);
+        if (i === 7) pct = 110; // solidarity exceeds expectations
+        pctText.textContent = pct + '% complete';
+      } else {
+        clearInterval(timer);
+        overlay.classList.remove('show');
+        marquee.style.display = 'none';
+        showOutcome();
+      }
+    }, 950);
+  });
+
+  function showOutcome() {
+    var name = (document.getElementById('memberName').value || 'A Member in Good Standing').trim();
+    var dues = document.getElementById('dues').value;
+    var category = document.getElementById('category').value;
+    var details = document.getElementById('details').value.trim();
+    var remedy = document.getElementById('remedy').value;
+    var sevText = sevLabels[sev.value];
+    var isScab = dues.indexOf('Scab') === 0;
+
+    var ruling;
+    if (isScab) {
+      stampEl.textContent = 'Dismissed';
+      stampEl.className = 'stamp bad';
+      ruling = scabRuling;
+    } else {
+      stampEl.textContent = 'Upheld';
+      stampEl.className = 'stamp';
+      ruling = upholds[Math.floor(Math.random() * upholds.length)] +
+        ' Remedy awarded: ' + (remedy || 'one (1) Soju Saturday stream') + '.';
+    }
+    outcomeReason.textContent = ruling;
+    caseNo.textContent = caseNum() + ' • ratified 12–0';
+
+    var title = '[BCU-69420 GRIEVANCE] ' + category;
+    var body = [
+      '**Filed via:** BCU-69420 Member Grievance Portal',
+      '**Union member:** ' + name + ' (' + dues + ')',
+      '**Against:** Broccoli (the streamer / management)',
+      '**Category:** ' + category,
+      '**Severity:** ' + sevText,
+      '**Demanded remedy:** ' + (remedy || 'unspecified (the Committee will invent one)'),
+      '',
+      '### Incident description',
+      details || '(the member was too upset to elaborate; the Union understands)',
+      '',
+      '### Committee ruling',
+      (isScab ? 'DISMISSED — ' : 'UPHELD, 12–0 — ') + ruling
+    ].join('\n');
+    fileBtn.href = 'https://github.com/' + REPO + '/issues/new?title=' +
+      encodeURIComponent(title) + '&body=' + encodeURIComponent(body);
+
+    formCard.style.display = 'none';
+    outcome.style.display = 'block';
+    stampEl.style.animation = 'none';
+    void stampEl.offsetWidth;
+    stampEl.style.animation = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  againBtn.addEventListener('click', function () {
+    outcome.style.display = 'none';
+    formCard.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+</script>
+</body>
+</html>

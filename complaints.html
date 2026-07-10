@@ -41,8 +41,8 @@
   }
   .topbar h1 { font-size: 1.15rem; font-weight: 600; }
   .topbar .sub { font-size: .72rem; opacity: .75; }
+  .topbar .nav { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
   .topbar a.navlink {
-    margin-left: auto;
     color: #fff;
     font-size: .72rem;
     background: rgba(255,255,255,.15);
@@ -237,9 +237,13 @@
   <img src="assets/face.webp" alt="Broccoli Industries HR">
   <div>
     <h1>Broccoli Industries&trade; &mdash; HR Complaint Portal</h1>
-    <div class="sub">"Your Voice Matters (To Someone, Presumably)" &bull; HR-OS v2.4.1</div>
+    <div class="sub">"Your Voice Matters (To Someone, Presumably)" &bull; Streamer Use Only &mdash; chatters, <a href="chatters.html" style="color:#fff">your union portal is here</a></div>
   </div>
-  <a class="navlink" href="index.html">&larr; Time Off Portal</a>
+  <div class="nav">
+    <a class="navlink" href="records.html">Records Room</a>
+    <a class="navlink" href="index.html">Time Off Portal</a>
+    <a class="navlink" href="chatters.html">Chatter Grievances</a>
+  </div>
 </div>
 
 <div class="wrap">
@@ -369,9 +373,13 @@
       </div>
       <div id="escalateNote"></div>
       <div class="outcome-actions">
+        <a class="btn" id="fileBtn" href="#" target="_blank" rel="noopener" style="background:#c9a227;color:#201a00">Enter Into Permanent Record &rarr;</a>
         <button class="btn secondary" id="escalateBtn">Escalate to HR's Manager</button>
         <button class="btn" id="againBtn">File Another Complaint</button>
       </div>
+      <p style="font-size:.72rem;color:#556;margin-top:10px">"Enter Into Permanent Record" opens a
+      pre-written filing on GitHub &mdash; hit <strong>Submit new issue</strong> there and it is archived
+      forever in the <a href="records.html">Records Room</a>, where the worm will re-read it annually.</p>
       <p class="fineprint">Broccoli Industries takes all complaints seriously, holds them close,
       and never lets them go anywhere. Complaints are retained forever and forwarded to the accused
       within 0.0002s as a professional courtesy. This portal is monitored by the worm. The worm says hi.</p>
@@ -495,6 +503,9 @@
     }, 950);
   });
 
+  var REPO = 'docrickman/broccoli-pto';
+  var fileBtn = document.getElementById('fileBtn');
+
   function showOutcome() {
     escalations = 0;
     escalateNote.textContent = '';
@@ -512,6 +523,27 @@
     stampEl.textContent = selfCase ? 'Sustained' : 'Noted';
     outcomeReason.textContent = text;
     caseNo.textContent = caseNum() + ' • forwarded to accused in 0.0002s';
+
+    var name = (document.getElementById('empName').value || 'Anonymous (Broccoli)').trim();
+    var category = document.getElementById('category').value;
+    var details = document.getElementById('details').value.trim();
+    var title = '[HR COMPLAINT] ' + category + ' — against ' + against;
+    var body = [
+      '**Filed via:** Broccoli Industries HR Complaint Portal (Streamer Use Only)',
+      '**Complainant:** Anonymous (' + name + ')',
+      '**Against:** ' + against,
+      '**Category:** ' + category,
+      '**Severity:** ' + sevLabels[sev.value],
+      '**Desired outcome:** ' + (desired || 'closure (emotional)'),
+      '',
+      '### Incident description',
+      details || '(no details provided; HR has assumed the worst, about the complainant)',
+      '',
+      '### HR determination',
+      (selfCase ? 'SUSTAINED — ' : 'NOTED — ') + text
+    ].join('\n');
+    fileBtn.href = 'https://github.com/' + REPO + '/issues/new?title=' +
+      encodeURIComponent(title) + '&body=' + encodeURIComponent(body);
     formCard.style.display = 'none';
     outcome.style.display = 'block';
     stampEl.style.animation = 'none';
