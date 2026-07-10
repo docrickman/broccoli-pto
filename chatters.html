@@ -133,6 +133,7 @@
   .btn.secondary { background: #fff; color: var(--bcu-green-dark); border: 1px solid var(--bcu-green); }
   .btn.gold { background: var(--bcu-gold); color: #201a00; }
   .btn.gold:hover { background: #af8c1d; }
+  .btn:disabled { opacity: .7; cursor: default; }
 
   .overlay {
     position: fixed; inset: 0;
@@ -358,14 +359,13 @@
         </div>
       </div>
       <div class="outcome-actions">
-        <a class="btn gold" id="fileBtn" href="#" target="_blank" rel="noopener">Enter Into Permanent Record &rarr;</a>
+        <button class="btn gold" id="fileBtn">Enter Into Permanent Record &rarr;</button>
         <a class="btn secondary" href="records.html">View the Records Room</a>
         <button class="btn" id="againBtn">File Another Grievance</button>
       </div>
-      <p class="file-note">"Enter Into Permanent Record" opens a pre-written filing on GitHub &mdash;
-      hit <strong>Submit new issue</strong> there and your grievance is archived forever in the
-      <a href="records.html">Records Room</a>. (Requires a GitHub account. The Union apologizes for the
-      paperwork. The Union blames management.)</p>
+      <p class="file-note" id="fileNote">"Enter Into Permanent Record" archives this ruling in the public
+      <a href="records.html">Records Room</a> &mdash; instantly, anonymously, forever. No account, no
+      paperwork. The Union fought hard for this and will not stop mentioning it.</p>
       <p class="fineprint">Rulings of the Executive Grievance Committee are final, unanimous, and
       reached before the grievance is read. Broccoli's side of the story was requested as a
       formality and discarded unread. President Spaceghoast presides over all rulings from space and
@@ -397,7 +397,7 @@
 
 <script>
 (function () {
-  var REPO = 'docrickman/broccoli-pto';
+  var DB = 'https://broccoli-pto-default-rtdb.firebaseio.com';
   var form = document.getElementById('bcuForm');
   var overlay = document.getElementById('overlay');
   var statusText = document.getElementById('statusText');
@@ -498,7 +498,6 @@
     outcomeReason.textContent = ruling;
     caseNo.textContent = caseNum() + ' • Pres. Spaceghoast presiding';
 
-    var title = '[BCU-69420 GRIEVANCE] ' + category;
     var body = [
       '**Filed via:** BCU-69420 Member Grievance Portal',
       '**Union member:** ' + name + ' (' + dues + ')',
@@ -511,12 +510,13 @@
       details || '(the member was too upset to elaborate; the Union understands)',
       '',
       '### Committee ruling',
-      '_President Spaceghoast presiding, from space. The worm voting as a member (union hat verified)._',
+      'President Spaceghoast presiding, from space. The worm voting as a member (union hat verified).',
       '',
       (isScab ? 'DISMISSED — ' : 'UPHELD — ') + ruling
     ].join('\n');
-    fileBtn.href = 'https://github.com/' + REPO + '/issues/new?title=' +
-      encodeURIComponent(title) + '&body=' + encodeURIComponent(body);
+    pendingFiling = { kind: 'grievance', title: category, name: name, body: body, ts: 0 };
+    fileBtn.disabled = false;
+    fileBtn.textContent = 'Enter Into Permanent Record →';
 
     formCard.style.display = 'none';
     outcome.style.display = 'block';
@@ -525,6 +525,32 @@
     stampEl.style.animation = '';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  var pendingFiling = null;
+  fileBtn.addEventListener('click', function () {
+    if (!pendingFiling) return;
+    var rec = pendingFiling;
+    rec.ts = Date.now();
+    pendingFiling = null;
+    fileBtn.disabled = true;
+    fileBtn.textContent = 'Filing… (the worm is stamping it)';
+    fetch(DB + '/complaints.json', {
+      method: 'POST',
+      body: JSON.stringify(rec)
+    }).then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    }).then(function () {
+      fileBtn.textContent = '✓ Entered Into Permanent Record';
+      document.getElementById('fileNote').innerHTML = 'Your grievance is now part of the permanent ' +
+        'public record. View it in the <a href="records.html">Records Room</a>. It cannot be ' +
+        'withdrawn, amended, or lived down.';
+    }).catch(function () {
+      pendingFiling = rec;
+      fileBtn.disabled = false;
+      fileBtn.textContent = 'Filing failed — the worm dropped it. Try again →';
+    });
+  });
 
   againBtn.addEventListener('click', function () {
     outcome.style.display = 'none';

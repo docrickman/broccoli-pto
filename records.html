@@ -225,12 +225,12 @@
 
 <footer>
   Broccoli Industries&trade; Records Division &bull; "We Never Forget. We Never Forgive. We Never File Correctly."<br>
-  Archive backed by GitHub Issues &bull; <a href="https://github.com/docrickman/broccoli-pto/issues" target="_blank" rel="noopener">raw records</a>
+  Filings are anonymous, instant, and permanent &bull; no account required &bull; the cabinet accepts new records only (nothing may be altered or removed, per the worm)
 </footer>
 
 <script>
 (function () {
-  var REPO = 'docrickman/broccoli-pto';
+  var DB = 'https://broccoli-pto-default-rtdb.firebaseio.com';
   var recordsEl = document.getElementById('records');
   var countLabel = document.getElementById('countLabel');
   var allRecords = [];
@@ -240,16 +240,6 @@
     return String(s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
-  }
-
-  function classify(title) {
-    if (title.indexOf('[BCU-69420 GRIEVANCE]') === 0) return 'grievance';
-    if (title.indexOf('[HR COMPLAINT]') === 0) return 'hr';
-    return 'misc';
-  }
-
-  function cleanTitle(title) {
-    return title.replace('[BCU-69420 GRIEVANCE]', '').replace('[HR COMPLAINT]', '').trim() || '(untitled filing)';
   }
 
   // minimal, safe rendering of the markdown-ish bodies our portals generate
@@ -280,18 +270,15 @@
       var badge = r.kind === 'grievance' ? '<span class="badge grievance">BCU-69420 grievance</span>'
                 : r.kind === 'hr' ? '<span class="badge hr">HR complaint</span>'
                 : '<span class="badge misc">Unclassified filing</span>';
-      var status = r.state === 'open'
-        ? '<span class="status-chip open">Being Processed Emotionally</span>'
-        : '<span class="status-chip">Closure Achieved (allegedly)</span>';
       return '<div class="record">' +
         '<div class="rec-head">' + badge +
-          '<span class="rec-title">' + esc(cleanTitle(r.title)) + '</span>' +
-          '<span class="rec-meta"><img src="' + esc(r.avatar) + '" alt="">' + esc(r.user) +
-          ' &bull; ' + fmtDate(r.created) + '</span>' + status +
+          '<span class="rec-title">' + esc(r.title || '(untitled filing)') + '</span>' +
+          '<span class="rec-meta"><img src="assets/face.webp" alt="">' + esc(r.name || 'anonymous') +
+          ' &bull; ' + fmtDate(r.ts) + '</span>' +
+          '<span class="status-chip open">Being Processed Emotionally</span>' +
         '</div>' +
         '<div class="rec-body">' + renderBody(r.body) + '</div>' +
-        '<div class="rec-foot">Filing #' + r.number + ' &bull; ' + r.comments + ' response(s) from the accused &bull; ' +
-          '<a href="' + esc(r.url) + '" target="_blank" rel="noopener">view original filing</a></div>' +
+        '<div class="rec-foot">Filing #' + esc(r.id) + ' &bull; 0 response(s) from the accused &bull; withdrawal requests: see worm</div>' +
       '</div>';
     }).join('');
   }
@@ -305,33 +292,29 @@
     });
   });
 
-  fetch('https://api.github.com/repos/' + REPO + '/issues?state=all&per_page=100&sort=created&direction=desc')
+  fetch(DB + '/complaints.json')
     .then(function (res) {
-      if (!res.ok) throw new Error('GitHub API said ' + res.status);
+      if (!res.ok) throw new Error('the cabinet said ' + res.status);
       return res.json();
     })
-    .then(function (issues) {
-      allRecords = issues.filter(function (i) { return !i.pull_request; }).map(function (i) {
+    .then(function (data) {
+      allRecords = Object.keys(data || {}).map(function (id) {
+        var r = data[id] || {};
         return {
-          number: i.number,
-          title: i.title || '',
-          kind: classify(i.title || ''),
-          body: i.body || '',
-          user: i.user ? i.user.login : 'anonymous',
-          avatar: i.user ? i.user.avatar_url : 'assets/face.webp',
-          created: i.created_at,
-          state: i.state,
-          comments: i.comments,
-          url: i.html_url
+          id: id.slice(-6),
+          title: String(r.title || ''),
+          kind: r.kind === 'grievance' || r.kind === 'hr' ? r.kind : 'misc',
+          body: String(r.body || ''),
+          name: String(r.name || 'anonymous'),
+          ts: Number(r.ts) || 0
         };
-      });
+      }).sort(function (a, b) { return b.ts - a.ts; });
       render();
     })
     .catch(function (err) {
       recordsEl.innerHTML = '<div class="statebox"><img src="assets/face.webp" alt="">' +
         '<div>The Records Room is temporarily unavailable (' + esc(err.message) + ').<br>' +
-        'The filing cabinet is being sat on harder than usual. Try again shortly, or view the ' +
-        '<a href="https://github.com/' + REPO + '/issues">raw records</a>.</div></div>';
+        'The filing cabinet is being sat on harder than usual. Try again shortly.</div></div>';
     });
 })();
 </script>

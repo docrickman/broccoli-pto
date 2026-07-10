@@ -374,13 +374,13 @@
       </div>
       <div id="escalateNote"></div>
       <div class="outcome-actions">
-        <a class="btn" id="fileBtn" href="#" target="_blank" rel="noopener" style="background:#c9a227;color:#201a00">Enter Into Permanent Record &rarr;</a>
+        <button class="btn" id="fileBtn" style="background:#c9a227;color:#201a00">Enter Into Permanent Record &rarr;</button>
         <button class="btn secondary" id="escalateBtn">Escalate to HR's Manager</button>
         <button class="btn" id="againBtn">File Another Complaint</button>
       </div>
-      <p style="font-size:.72rem;color:#556;margin-top:10px">"Enter Into Permanent Record" opens a
-      pre-written filing on GitHub &mdash; hit <strong>Submit new issue</strong> there and it is archived
-      forever in the <a href="records.html">Records Room</a>, where the worm will re-read it annually.</p>
+      <p style="font-size:.72rem;color:#556;margin-top:10px" id="fileNote">"Enter Into Permanent Record"
+      archives this determination in the public <a href="records.html">Records Room</a> &mdash; instantly,
+      anonymously, forever &mdash; where the worm will re-read it annually.</p>
       <p class="fineprint">Broccoli Industries takes all complaints seriously, holds them close,
       and never lets them go anywhere. Complaints are retained forever and forwarded to the accused
       within 0.0002s as a professional courtesy. This portal is monitored by the worm. The worm says hi.</p>
@@ -505,8 +505,9 @@
     }, 950);
   });
 
-  var REPO = 'docrickman/broccoli-pto';
+  var DB = 'https://broccoli-pto-default-rtdb.firebaseio.com';
   var fileBtn = document.getElementById('fileBtn');
+  var pendingFiling = null;
 
   function showOutcome() {
     escalations = 0;
@@ -529,7 +530,6 @@
     var name = (document.getElementById('empName').value || 'Anonymous (Broccoli)').trim();
     var category = document.getElementById('category').value;
     var details = document.getElementById('details').value.trim();
-    var title = '[HR COMPLAINT] ' + category + ' — against ' + against;
     var body = [
       '**Filed via:** Broccoli Industries HR Complaint Portal (Streamer Use Only)',
       '**Complainant:** Anonymous (' + name + ')',
@@ -544,8 +544,9 @@
       '### HR determination',
       (selfCase ? 'SUSTAINED — ' : 'NOTED — ') + text
     ].join('\n');
-    fileBtn.href = 'https://github.com/' + REPO + '/issues/new?title=' +
-      encodeURIComponent(title) + '&body=' + encodeURIComponent(body);
+    pendingFiling = { kind: 'hr', title: category + ' — against ' + against, name: 'Anonymous (' + name + ')', body: body, ts: 0 };
+    fileBtn.disabled = false;
+    fileBtn.textContent = 'Enter Into Permanent Record →';
     formCard.style.display = 'none';
     outcome.style.display = 'block';
     stampEl.style.animation = 'none';
@@ -564,6 +565,31 @@
       'Escalation denied. Further escalations will be automatically converted into compliments and read on stream.'
     ];
     escalateNote.textContent = msgs[Math.min(escalations - 1, msgs.length - 1)];
+  });
+
+  fileBtn.addEventListener('click', function () {
+    if (!pendingFiling) return;
+    var rec = pendingFiling;
+    rec.ts = Date.now();
+    pendingFiling = null;
+    fileBtn.disabled = true;
+    fileBtn.textContent = 'Filing… (HR is pretending to look for a pen)';
+    fetch(DB + '/complaints.json', {
+      method: 'POST',
+      body: JSON.stringify(rec)
+    }).then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    }).then(function () {
+      fileBtn.textContent = '✓ Entered Into Permanent Record';
+      document.getElementById('fileNote').innerHTML = 'Filed. Your complaint is now permanent, public, ' +
+        'and in the <a href="records.html">Records Room</a>. HR has already read it and would like you ' +
+        'to know that it noticed the tone.';
+    }).catch(function () {
+      pendingFiling = rec;
+      fileBtn.disabled = false;
+      fileBtn.textContent = 'Filing failed — refile →';
+    });
   });
 
   againBtn.addEventListener('click', function () {
