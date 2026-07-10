@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Broccoli Industries — Time Off Request Portal</title>
+<link rel="icon" type="image/webp" href="assets/face.webp">
+<style>
+  :root {
+    --corp-blue: #1a4d8f;
+    --corp-blue-dark: #123762;
+    --corp-gray: #f0f2f5;
+    --border: #c8cdd4;
+    --deny-red: #c0392b;
+    --approve-green: #1e8449;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    background: var(--corp-gray);
+    color: #222;
+    min-height: 100vh;
+  }
+  .topbar {
+    background: linear-gradient(180deg, var(--corp-blue), var(--corp-blue-dark));
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  }
+  .topbar img {
+    height: 46px; width: 46px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #fff;
+    object-fit: cover;
+  }
+  .topbar h1 { font-size: 1.15rem; font-weight: 600; }
+  .topbar .sub { font-size: .72rem; opacity: .75; }
+  .envbadge {
+    margin-left: auto;
+    font-size: .65rem;
+    background: #e67e22;
+    padding: 3px 8px;
+    border-radius: 3px;
+    letter-spacing: .5px;
+  }
+  .topbar a.navlink {
+    color: #fff;
+    font-size: .72rem;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.4);
+    padding: 5px 10px;
+    border-radius: 3px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .topbar a.navlink:hover { background: rgba(255,255,255,.28); }
+  .wrap { max-width: 760px; margin: 24px auto 80px; padding: 0 14px; }
+
+  .notice {
+    background: #fff8dc;
+    border: 1px solid #e0c860;
+    border-left: 5px solid #e0a800;
+    padding: 10px 14px;
+    font-size: .8rem;
+    margin-bottom: 18px;
+    border-radius: 3px;
+  }
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .card-head {
+    background: #fafbfc;
+    border-bottom: 1px solid var(--border);
+    padding: 12px 18px;
+    font-weight: 600;
+    font-size: .95rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .card-body { padding: 18px; }
+
+  .balance-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .stat {
+    flex: 1 1 150px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 10px 12px;
+    background: #fafbfc;
+  }
+  .stat .label { font-size: .68rem; text-transform: uppercase; letter-spacing: .6px; color: #667; }
+  .stat .value { font-size: 1.3rem; font-weight: 700; margin-top: 2px; }
+  .stat .value.bad { color: var(--deny-red); }
+  .stat .note { font-size: .65rem; color: #889; margin-top: 2px; }
+
+  form .row { margin-bottom: 15px; }
+  label { display: block; font-size: .8rem; font-weight: 600; margin-bottom: 4px; color: #334; }
+  label .req { color: var(--deny-red); }
+  input[type=text], input[type=date], select, textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: .9rem;
+    font-family: inherit;
+    background: #fff;
+  }
+  textarea { resize: vertical; min-height: 70px; }
+  .hint { font-size: .68rem; color: #778; margin-top: 3px; }
+  .two-col { display: flex; gap: 14px; }
+  .two-col > div { flex: 1; }
+
+  .checks { font-size: .78rem; }
+  .checks label { display: flex; gap: 8px; font-weight: 400; margin-bottom: 8px; align-items: flex-start; cursor: pointer; }
+  .checks input { margin-top: 2px; }
+
+  .btn {
+    background: var(--corp-blue);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 11px 26px;
+    font-size: .95rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn:hover { background: var(--corp-blue-dark); }
+  .btn.secondary { background: #fff; color: var(--corp-blue); border: 1px solid var(--corp-blue); }
+
+  .chain-img { width: 100%; display: block; }
+  .figcap { font-size: .7rem; color: #667; padding: 8px 14px 12px; font-style: italic; }
+
+  /* processing overlay */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(18, 30, 48, .93);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+  }
+  .overlay.show { display: flex; }
+  .overlay .box { text-align: center; color: #fff; max-width: 520px; padding: 20px; }
+  .overlay img { max-width: 320px; width: 80%; border-radius: 8px; background: #fff; }
+  .overlay .status { margin-top: 18px; font-size: 1rem; min-height: 1.4em; }
+  .overlay .pct { font-size: .75rem; opacity: .7; margin-top: 6px; }
+
+  /* verdict */
+  #verdict { display: none; }
+  .stamp {
+    display: inline-block;
+    font-size: 2.6rem;
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: var(--deny-red);
+    border: 6px solid var(--deny-red);
+    border-radius: 8px;
+    padding: 6px 22px;
+    transform: rotate(-8deg);
+    text-transform: uppercase;
+    animation: stampIn .3s cubic-bezier(.2, 2.5, .5, 1);
+    margin: 10px 0 16px;
+  }
+  .stamp.ok { color: var(--approve-green); border-color: var(--approve-green); }
+  @keyframes stampIn {
+    from { transform: rotate(-8deg) scale(3); opacity: 0; }
+    to   { transform: rotate(-8deg) scale(1); opacity: 1; }
+  }
+  .verdict-body { text-align: center; padding: 26px 18px; }
+  .verdict-reason { font-size: .95rem; max-width: 520px; margin: 0 auto 20px; color: #333; }
+  .signoff {
+    display: flex; align-items: center; gap: 12px;
+    justify-content: center; margin: 18px 0 6px;
+  }
+  .signoff img { height: 64px; width: 64px; object-fit: contain; }
+  .signoff .who { text-align: left; font-size: .78rem; color: #445; }
+  .signoff .who .name { font-family: "Segoe Script", "Comic Sans MS", cursive; font-size: 1.15rem; color: #123; }
+  .fineprint { font-size: .62rem; color: #99a; max-width: 480px; margin: 14px auto 0; }
+  .verdict-actions { margin-top: 18px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  #appealNote { font-size: .78rem; color: var(--deny-red); margin-top: 10px; font-weight: 600; }
+
+  footer {
+    text-align: center;
+    font-size: .65rem;
+    color: #99a;
+    padding: 20px;
+  }
+  .marquee-wrap {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    pointer-events: none;
+    z-index: 40;
+    overflow: hidden;
+    height: 120px;
+    display: none;
+  }
+  .marquee-wrap img {
+    position: absolute;
+    bottom: 0;
+    height: 110px;
+    left: -260px;
+    animation: crawl 14s linear infinite;
+  }
+  @keyframes crawl {
+    from { left: -260px; }
+    to   { left: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <img src="assets/face.webp" alt="Broccoli Industries logo">
+  <div>
+    <h1>Broccoli Industries&trade; &mdash; Employee Self-Service</h1>
+    <div class="sub">Time Off Request Portal &bull; HR-OS v2.4.1 (unpatched since 2019)</div>
+  </div>
+  <span class="envbadge">PRODUCTION</span>
+  <a class="navlink" href="index.html">&#8962; All Portals</a>
+  <a class="navlink" href="complaints.html">HR Complaints</a>
+  <a class="navlink" href="chatters.html">Chatter Grievances</a>
+  <a class="navlink" href="records.html">Records Room</a>
+</div>
+
+<div class="wrap">
+
+  <div class="notice">
+    <strong>Notice:</strong> Due to unprecedented request volume (1 request), time off approvals are
+    currently experiencing delays of up to <strong>forever</strong>. Thank you for your patience,
+    which is mandatory.
+  </div>
+
+  <div class="card">
+    <div class="card-head">Your Leave Balances</div>
+    <div class="card-body balance-row">
+      <div class="stat">
+        <div class="label">PTO Available</div>
+        <div class="value bad">-3.25 hrs</div>
+        <div class="note">accruing at 0.0001 hrs / stream</div>
+      </div>
+      <div class="stat">
+        <div class="label">Sick Leave</div>
+        <div class="value">0.00 hrs</div>
+        <div class="note">illness requires 6 weeks advance notice</div>
+      </div>
+      <div class="stat">
+        <div class="label">Personal Days</div>
+        <div class="value">1*</div>
+        <div class="note">*may not be used on days ending in "y"</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">Approval Chain <span style="font-weight:400;font-size:.7rem;color:#889">14 signatures required</span></div>
+    <img class="chain-img" src="assets/worm.gif" alt="The full management approval chain">
+    <div class="figcap">Fig. 1 &mdash; Your complete management approval chain. Each request must be approved
+    unanimously. Management is currently one (1) organism. Segments 2&ndash;13 are represented by the
+    Broccoli Chatter's Union, Local BCU-69420, and cannot be contacted during posting hours (all hours).</div>
+  </div>
+
+  <div class="card" id="formCard">
+    <div class="card-head">New Time Off Request</div>
+    <div class="card-body">
+      <form id="ptoForm">
+        <div class="two-col row">
+          <div>
+            <label>Employee Name <span class="req">*</span></label>
+            <input type="text" id="empName" placeholder="e.g. Broccoli" required>
+          </div>
+          <div>
+            <label>Employee ID <span class="req">*</span></label>
+            <input type="text" value="BROC-0001" disabled>
+            <div class="hint">Auto-filled. There is only one employee.</div>
+          </div>
+        </div>
+
+        <div class="two-col row">
+          <div>
+            <label>Department <span class="req">*</span></label>
+            <select required>
+              <option>Content Production</option>
+              <option>Zomboid Casualty Analysis</option>
+              <option>Chat Moderation &amp; Emotional Damage</option>
+              <option>Professional Lurking</option>
+              <option>Middle Management (segments 2&ndash;13)</option>
+            </select>
+          </div>
+          <div>
+            <label>Leave Type <span class="req">*</span></label>
+            <select id="leaveType" required>
+              <option>Vacation</option>
+              <option>Sick (proof of illness + illness itself required)</option>
+              <option>Buttworms (HR asks that you do not elaborate)</option>
+              <option>Sweetie Cutie Yard Time</option>
+              <option>Touching Grass (experimental)</option>
+              <option>New Game Release (auto-denied)</option>
+              <option>Jury Duty (we will check)</option>
+              <option>Wedding (yours; others' weddings are hobbies)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="two-col row">
+          <div>
+            <label>Start Date <span class="req">*</span></label>
+            <input type="date" id="startDate" required>
+          </div>
+          <div>
+            <label>End Date <span class="req">*</span></label>
+            <input type="date" id="endDate" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <label>Business Justification <span class="req">*</span></label>
+          <textarea id="reason" placeholder="Explain why streaming should stop so that you may 'rest'" required></textarea>
+          <div class="hint">Minimum 250 words. Maximum 250 words.</div>
+        </div>
+
+        <div class="row">
+          <label>Coverage Plan <span class="req">*</span></label>
+          <select required>
+            <option value="">-- Select who will cover your duties --</option>
+            <option>Nobody (stream simply does not happen)</option>
+            <option>A recording of me looking at the camera</option>
+            <option>The worm (Fig. 1)</option>
+            <option>Chat moderates itself (catastrophic)</option>
+          </select>
+        </div>
+
+        <div class="row checks">
+          <label><input type="checkbox" required> I acknowledge that requesting time off may itself constitute a scheduling conflict.</label>
+          <label><input type="checkbox" required> I understand my PTO balance is negative and I am effectively requesting to owe MORE time.</label>
+          <label><input type="checkbox" required> I have read Policy Binder Vol. IV (there is no Vol. IV).</label>
+          <label><input type="checkbox" required> I consent to my request being reviewed by the organism in Fig. 1.</label>
+        </div>
+
+        <button type="submit" class="btn">Submit Request</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card" id="verdict">
+    <div class="card-head">Request Status <span id="ticketNo" style="font-weight:400;font-size:.7rem;color:#889"></span></div>
+    <div class="verdict-body">
+      <div class="stamp" id="stampEl">Denied</div>
+      <p class="verdict-reason" id="verdictReason"></p>
+      <div class="signoff">
+        <img src="assets/face.webp" alt="Chief Approval Officer">
+        <div class="who">
+          <div class="name" id="signName">B. Industries</div>
+          Chief Approval Officer &amp; All 14 Managers<br>
+          Broccoli Industries&trade; Human Resources<br>
+          <span id="unionLine">In cooperation with the Broccoli Chatter's Union, BCU-69420</span>
+        </div>
+      </div>
+      <div id="appealNote"></div>
+      <div class="verdict-actions">
+        <button class="btn secondary" id="appealBtn">File an Appeal</button>
+        <button class="btn" id="againBtn">Submit New Request</button>
+      </div>
+      <p class="fineprint">This decision was reached after careful deliberation lasting several
+      milliseconds. Decisions are final, binding, and were made before you finished typing. Broccoli
+      Industries is an equal-opportunity denier of requests. Appeals are processed by the same
+      organism that denied the original request.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="box">
+    <img src="assets/bounce.gif" alt="Management deliberating">
+    <div class="status" id="statusText">Contacting Human Resources&hellip;</div>
+    <div class="pct" id="pctText">0% complete</div>
+  </div>
+</div>
+
+<div class="marquee-wrap" id="marquee">
+  <img src="assets/worm.gif" alt="">
+</div>
+
+<footer>
+  Broccoli Industries&trade; &bull; "We Take Your Requests Seriously (Into Consideration (Briefly))"<br>
+  HR-OS v2.4.1 &bull; This portal is best viewed on a work computer, during work hours, while working.<br>
+  Unhappy with a decision? <a href="complaints.html" style="color:#1a4d8f">File an HR complaint.</a> (HR is the worm.)<br>
+  Chatters: lodge grievances against management at the <a href="chatters.html" style="color:#1a4d8f">BCU-69420 union portal</a>.
+  All filings live forever in the <a href="records.html" style="color:#1a4d8f">Records Room</a>.
+</footer>
+
+<script>
+(function () {
+  var form = document.getElementById('ptoForm');
+  var overlay = document.getElementById('overlay');
+  var statusText = document.getElementById('statusText');
+  var pctText = document.getElementById('pctText');
+  var verdict = document.getElementById('verdict');
+  var stampEl = document.getElementById('stampEl');
+  var verdictReason = document.getElementById('verdictReason');
+  var ticketNo = document.getElementById('ticketNo');
+  var appealBtn = document.getElementById('appealBtn');
+  var againBtn = document.getElementById('againBtn');
+  var appealNote = document.getElementById('appealNote');
+  var marquee = document.getElementById('marquee');
+  var formCard = document.getElementById('formCard');
+  var appeals = 0;
+
+  var steps = [
+    'Validating employee sentiment…',
+    'Waking the approval chain…',
+    'Approval chain is stretching…',
+    'Consulting Policy Binder Vol. IV…',
+    'Vol. IV not found. Improvising…',
+    'Escalating to middle management…',
+    'Escalating to the middle of middle management…',
+    'Notifying the Broccoli Chatter\'s Union (BCU-69420)…',
+    'BCU-69420 is caucusing…',
+    'Manager 7 of 14 reviewing (he is a segment)…',
+    'Cross-referencing your dates against vibes…',
+    'Calculating how personally to take this…',
+    'Drafting rejection (pre-emptively)…',
+    'Finalizing decision made 4 seconds ago…'
+  ];
+
+  var denials = [
+    'The dates you requested conflict with the dates you requested.',
+    'Insufficient PTO balance. You may borrow against your 2031 accrual at an interest rate of one (1) additional stream per hour.',
+    'Manager 7 of 14 could not be reached. He is a segment of a worm and does not have email.',
+    'Your business justification was reviewed and found to be emotionally moving. However: no.',
+    'Denied per company policy 12.4.1(b), which reads, in full: "no."',
+    'HR has determined you were not scheduled to exist on the requested dates. Request is therefore moot.',
+    'Approval chain deadlocked: Manager 3 approved your request, then remembered who you are.',
+    'Your coverage plan ("The worm, Fig. 1") was rejected by the worm (Fig. 1), citing a conflict of interest.',
+    'Request received outside the approved window for receiving requests (the window is painted shut).',
+    'The approval chain reviewed your request and ate it. A replacement form has been denied on your behalf.',
+    'Your request was approved unanimously, but the ink used to sign it is on backorder until Q3 2031.',
+    'Time off implies time on, which implies time, which Legal has advised us not to acknowledge.',
+    'The Broccoli Chatter\'s Union (BCU-69420) has filed a grievance against your request. The grievance was approved. Your request was not.',
+    'Per the collective bargaining agreement with BCU-69420, chatters are guaranteed a streamer. You are the streamer. Do the math.',
+    'BCU-69420 voted 12–0 against, with segments 1 and 14 abstaining (they are the head and are legally you).'
+  ];
+
+  var buttwormDenials = [
+    'Your buttworms claim has been forwarded to the worm (Fig. 1) for a conflict-of-interest review. Denied pending its recusal, which it has declined.',
+    'Buttworms are classified as dependents, not an illness. Please add them to your health plan during open enrollment.',
+    'Per company policy, buttworms are a pre-existing condition and are therefore considered part of your job.',
+    'BCU-69420 has moved to unionize your buttworms. Until negotiations conclude, they are required to report to work with you.'
+  ];
+
+  var approvals = [
+    'Congratulations. Your request has been APPROVED. Note: approval is decorative and confers no time off.',
+    'APPROVED. The approval chain was in an unusually good mood (it found a leaf). This will be corrected.'
+  ];
+
+  function ticket() {
+    return 'Ticket #BROC-' + String(Math.floor(Math.random() * 90000) + 10000);
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    overlay.classList.add('show');
+    marquee.style.display = 'block';
+    var i = 0;
+    var totalSteps = steps.length;
+    statusText.textContent = steps[0];
+    pctText.textContent = '0% complete';
+    var timer = setInterval(function () {
+      i++;
+      if (i < totalSteps) {
+        statusText.textContent = steps[i];
+        // progress that goes backwards once, like all good enterprise software
+        var pct = Math.round((i / totalSteps) * 100);
+        if (i === 7) pct = 31;
+        pctText.textContent = pct + '% complete';
+      } else {
+        clearInterval(timer);
+        overlay.classList.remove('show');
+        marquee.style.display = 'none';
+        showVerdict();
+      }
+    }, 950);
+  });
+
+  function showVerdict() {
+    appeals = 0;
+    appealNote.textContent = '';
+    var leave = document.getElementById('leaveType').value;
+    var yardTime = leave.indexOf('Sweetie Cutie') === 0;
+    var buttworms = leave.indexOf('Buttworms') === 0;
+    var approved = yardTime || Math.random() < 0.05;
+    stampEl.textContent = approved ? 'Approved*' : 'Denied';
+    stampEl.className = 'stamp' + (approved ? ' ok' : '');
+    if (yardTime) {
+      verdictReason.textContent = 'APPROVED by emergency unanimous vote of the Broccoli Chatter\'s ' +
+        'Union (BCU-69420), who consider Sweetie Cutie Yard Time a protected activity. ' +
+        '*This approval is contingent upon the delivery of one (1) Soju Saturday stream. ' +
+        'Failure to deliver will convert this approval into a retroactive denial and the ' +
+        'yard time will be billed back at the prevailing worm rate.';
+    } else {
+      var pool = approved ? approvals : (buttworms ? buttwormDenials : denials);
+      verdictReason.textContent = pool[Math.floor(Math.random() * pool.length)];
+    }
+    ticketNo.textContent = ticket() + ' • resolved in 0.0002s';
+    var name = (document.getElementById('empName').value || 'Valued Employee').trim();
+    document.getElementById('signName').textContent = 'On behalf of ' + name + "'s better judgment";
+    formCard.style.display = 'none';
+    verdict.style.display = 'block';
+    // restart stamp animation
+    stampEl.style.animation = 'none';
+    void stampEl.offsetWidth;
+    stampEl.style.animation = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  appealBtn.addEventListener('click', function () {
+    appeals++;
+    var msgs = [
+      'Appeal denied. (Processed in 0.0001s — a new record.)',
+      'Appeal denied. The appeal reviewer is the same worm.',
+      'Appeal denied. Filing further appeals now counts as vacation.',
+      'Appeal denied. HR would like you to know this is starting to feel personal (for them).',
+      'Appeal #' + appeals + ' denied. The worm is no longer making eye contact.'
+    ];
+    appealNote.textContent = msgs[Math.min(appeals - 1, msgs.length - 1)];
+  });
+
+  againBtn.addEventListener('click', function () {
+    verdict.style.display = 'none';
+    formCard.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+</script>
+</body>
+</html>
