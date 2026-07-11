@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buttworm Heavy Industries — Break Room Bulletin Board</title>
+<link rel="icon" type="image/webp" href="assets/face.webp">
+<style>
+  :root {
+    --corp-blue: #1a4d8f;
+    --cork: #a97e4f;
+    --cork-dark: #8a6238;
+    --frame: #6e4a28;
+    --paper: #fffdf5;
+    --border: #c8cdd4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    background: #f0f2f5;
+    color: #222;
+    min-height: 100vh;
+  }
+  .topbar {
+    background: linear-gradient(180deg, #8a6238, #6e4a28);
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  }
+  .topbar img {
+    height: 46px; width: 46px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #fff;
+    object-fit: cover;
+  }
+  .topbar h1 { font-size: 1.15rem; font-weight: 600; }
+  .topbar .sub { font-size: .72rem; opacity: .8; }
+  .nav { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+  .nav a {
+    color: #fff;
+    font-size: .72rem;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.4);
+    padding: 5px 10px;
+    border-radius: 3px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .nav a:hover { background: rgba(255,255,255,.28); }
+
+  .wrap { max-width: 1180px; margin: 24px auto 60px; padding: 0 14px; }
+
+  .notice {
+    background: #fff8dc;
+    border: 1px solid #e0c860;
+    border-left: 5px solid #e0a800;
+    padding: 10px 14px;
+    font-size: .8rem;
+    margin-bottom: 18px;
+    border-radius: 3px;
+  }
+
+  .board {
+    background-color: var(--cork);
+    background-image:
+      radial-gradient(rgba(0,0,0,.08) 1px, transparent 1.5px),
+      radial-gradient(rgba(255,255,255,.05) 1px, transparent 1.5px);
+    background-size: 9px 9px, 13px 13px;
+    background-position: 0 0, 4px 6px;
+    border: 16px solid var(--frame);
+    border-radius: 10px;
+    box-shadow: inset 0 0 40px rgba(0,0,0,.28), 0 4px 14px rgba(0,0,0,.25);
+    padding: 30px 22px 40px;
+  }
+
+  .board-section { margin-bottom: 40px; }
+  .board-section:last-child { margin-bottom: 0; }
+
+  .board-label {
+    position: relative;
+    display: inline-block;
+    background: var(--paper);
+    padding: 8px 20px 8px 18px;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: .5px;
+    transform: rotate(-1.2deg);
+    box-shadow: 2px 3px 6px rgba(0,0,0,.3);
+    margin: 0 0 6px 8px;
+  }
+  .board-label small {
+    display: block;
+    font-weight: 400;
+    font-size: .66rem;
+    color: #667;
+    font-style: italic;
+  }
+  .board-label::before {
+    content: '';
+    position: absolute;
+    top: -7px; left: 50%;
+    margin-left: -7px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ff8a80, #c62828 60%, #7f1313);
+    box-shadow: 0 2px 3px rgba(0,0,0,.4);
+  }
+
+  .pin-wall {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 26px;
+    justify-content: center;
+    padding-top: 18px;
+  }
+  .pin-item {
+    position: relative;
+    background: var(--paper);
+    padding: 10px 10px 8px;
+    width: 210px;
+    box-shadow: 3px 5px 10px rgba(0,0,0,.35);
+  }
+  .pin-item.wide { width: 320px; }
+  .pin-item img {
+    width: 100%;
+    display: block;
+    background: #fff;
+  }
+  .pin-item.pixel img { image-rendering: pixelated; }
+  .pin-cap {
+    font-family: "Segoe Print", "Comic Sans MS", cursive;
+    font-size: .72rem;
+    color: #333;
+    padding: 8px 2px 2px;
+    line-height: 1.45;
+  }
+  .pin-item::before {
+    content: '';
+    position: absolute;
+    top: -8px; left: 50%;
+    margin-left: -8px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #90caf9, #1565c0 60%, #0b3a70);
+    box-shadow: 0 2px 3px rgba(0,0,0,.45);
+    z-index: 2;
+  }
+  .pin-wall .pin-item:nth-child(4n+1) { transform: rotate(-2.4deg); }
+  .pin-wall .pin-item:nth-child(4n+2) { transform: rotate(1.8deg); }
+  .pin-wall .pin-item:nth-child(4n+3) { transform: rotate(-1.1deg); }
+  .pin-wall .pin-item:nth-child(4n+4) { transform: rotate(2.6deg); }
+  .pin-wall .pin-item:nth-child(3n+1)::before { background: radial-gradient(circle at 35% 30%, #ffe082, #f9a825 60%, #8a5c00); }
+  .pin-wall .pin-item:nth-child(5n+2)::before { background: radial-gradient(circle at 35% 30%, #a5d6a7, #2e7d32 60%, #144017); }
+  .pin-item:hover { transform: rotate(0deg) scale(1.03); transition: transform .15s ease; z-index: 3; }
+
+  footer {
+    text-align: center;
+    font-size: .65rem;
+    color: #99a;
+    padding: 20px;
+  }
+  footer a { color: var(--corp-blue); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <img src="assets/face.webp" alt="Buttworm Heavy Industries">
+  <div>
+    <h1>Buttworm Heavy Industries&trade; &mdash; Break Room Bulletin Board</h1>
+    <div class="sub">For Morale (mandatory) &bull; notices stay up forever &bull; taking one down is a records violation</div>
+  </div>
+  <div class="nav">
+    <a href="index.html">&#8962; All Portals</a>
+    <a href="timeoff.html">Time Off</a>
+    <a href="complaints.html">Streamer HR</a>
+    <a href="chatters.html">Chatter Grievances</a>
+    <a href="records.html">Records Room</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="notice">
+    <strong>Posting Policy:</strong> All materials on this board were posted by the worm, Snurpy, or
+    persons unknown. Nothing may be removed (the pins are load-bearing). Items are official company
+    communications the moment they touch cork. Morale is measured hourly and attendance at the board
+    is logged.
+  </div>
+
+  <div class="board">
+
+    <div class="board-section">
+      <div class="board-label">Meet the Organization<small>an org chart, in the loosest sense</small></div>
+      <div class="pin-wall">
+        <div class="pin-item">
+          <img src="assets/face.webp" alt="Chief Approval Officer">
+          <div class="pin-cap">The Chief Approval Officer. All fourteen signatures are his. He has never approved anything.</div>
+        </div>
+        <div class="pin-item wide">
+          <img src="assets/worm.gif" alt="Management">
+          <div class="pin-cap">Management. Also HR. Also union rank-and-file (segments 2&ndash;13). It contains multitudes (14). It has cleared itself of everything.</div>
+        </div>
+        <div class="pin-item">
+          <img src="assets/spaceghoast.png" alt="President Spaceghoast">
+          <div class="pin-cap">President Spaceghoast, BCU-69420. Presides from space. Has never lost a grievance, attended a meeting, or been reachable.</div>
+        </div>
+        <div class="pin-item">
+          <img src="assets/mlady.png" alt="Chief Experience Officer">
+          <div class="pin-cap">The Chief Experience Officer, mid&ndash;severance package. M'employee.</div>
+        </div>
+        <div class="pin-item wide">
+          <img src="assets/bounce.gif" alt="The deliberation committee">
+          <div class="pin-cap">The deliberation committee, deliberating. Progress: 31% and falling.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="board-section">
+      <div class="board-label">Employee of the Month<small>all of them. every month. there is one employee</small></div>
+      <div class="pin-wall">
+        <div class="pin-item">
+          <img src="assets/broccoli.gif" alt="Employee of the Month">
+          <div class="pin-cap">Broccoli (BROC-0001). 47 consecutive months. There are no other candidates. Prize: continued employment.</div>
+        </div>
+        <div class="pin-item">
+          <img src="assets/homer.png" alt="Safety training rendering">
+          <div class="pin-cap">The employee, as depicted in all safety training materials. Legal says the resemblance is coincidental. Legal is the worm.</div>
+        </div>
+        <div class="pin-item">
+          <img src="assets/mad.png" alt="Live denial reaction">
+          <div class="pin-cap">Live reaction, denial #4,912. The webcam turns itself on for these. HR watches them at the holiday party.</div>
+        </div>
+        <div class="pin-item pixel">
+          <img src="assets/cctv.png" alt="Security still" style="width:120px;margin:0 auto">
+          <div class="pin-cap">After-hours security still (fully enhanced). Suspect: "mustached, backwards hat, known to us personally."</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="board-section">
+      <div class="board-label">Wellness &amp; Benefits<small>the complete package</small></div>
+      <div class="pin-wall">
+        <div class="pin-item">
+          <img src="assets/bald-broc.png" alt="The Wellness Program">
+          <div class="pin-cap">The Wellness Program: one (1) chocolate milk in lieu of all approved leave. The hair was traded for it. This counts as your vacation.</div>
+        </div>
+        <div class="pin-item">
+          <img src="assets/choccy-head.png" alt="EAP representative">
+          <div class="pin-cap">Your Employee Assistance Program representative. He gave everything to the chocolate milk. To decline the milk: you may not.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="board-section">
+      <div class="board-label">Snurpy's Corner<small>curated by the artist, who remembers</small></div>
+      <div class="pin-wall">
+        <div class="pin-item wide">
+          <img src="assets/statement.jpg" alt="The inciting message">
+          <div class="pin-cap">March 30, 2025, 8:52 PM. The message the streamer sent Snurpy. Every piece below was made after this. He has software.</div>
+        </div>
+        <div class="pin-item">
+          <img src="assets/balder.png" alt="Courtroom sketch">
+          <div class="pin-cap">Courtroom sketch (there is no courtroom). Ratified 12&ndash;0 as "accurate in spirit." The mustache was revoked pending good behavior.</div>
+        </div>
+        <div class="pin-item">
+          <img src="assets/cream-pie-guy.jpg" alt="Big Cream Pie Guy">
+          <div class="pin-cap"><em>Big Cream Pie Guy</em>. Mixed media: cream, guy. From the Permanent Collection. Do not cross the rope.</div>
+        </div>
+        <div class="pin-item wide">
+          <img src="assets/cream-pie-study.jpg" alt="The study">
+          <div class="pin-cap">The study, from life. He asked that it not go in the museum. It is in the museum. It is also on this board.</div>
+        </div>
+        <div class="pin-item">
+          <img src="assets/cream-action.gif" alt="The Piening">
+          <div class="pin-cap"><em>The Piening</em> (looping). The act itself. The museum has asked us to stop acquiring these. The artist keeps making them.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="board-section">
+      <div class="board-label">The Evidence Board<small>red string budget: denied</small></div>
+      <div class="pin-wall">
+        <div class="pin-item wide">
+          <img src="assets/evidence.png" alt="Exhibit A">
+          <div class="pin-cap">Exhibit A. "dude i will beat your ass to a pulp." Preserved at 91% condition, like his weapon. Unlike his reputation.</div>
+        </div>
+        <div class="pin-item wide">
+          <img src="assets/ruff.png" alt="Exhibit B">
+          <div class="pin-cap">Exhibit B. The dog ears were his idea. The associate has retained separate counsel. Ruff. The Union rests.</div>
+        </div>
+        <div class="pin-item">
+          <img src="assets/pig-duet.png" alt="The John Pork Matter">
+          <div class="pin-cap">The John Pork Matter. He will not answer the phone. He will, apparently, do this. Answer the phone, Broccoli.</div>
+        </div>
+        <div class="pin-item wide">
+          <img src="assets/borb.png" alt="The Borb">
+          <div class="pin-cap">The Borb, inbound. Pinned here out of caution. It has read the board. It has opinions about the board.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+  Buttworm Heavy Industries&trade; Facilities Division &bull; "The Board Sees All (It Is at Eye Level)"<br>
+  All figures also appear at their original posts throughout the
+  <a href="index.html">portals</a>. This board is the collected edition.
+</footer>
+
+</body>
+</html>
