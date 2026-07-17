@@ -44,7 +44,7 @@
   .topbar h1 { font-size: 1.25rem; font-weight: 600; }
   .topbar .sub { font-size: .74rem; opacity: .78; }
 
-  .wrap { max-width: 900px; margin: 30px auto 60px; padding: 0 16px; }
+  .wrap { max-width: 1240px; margin: 30px auto 60px; padding: 0 16px; }
 
   .greeting {
     text-align: center;
@@ -55,8 +55,17 @@
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(6, 1fr);
     gap: 20px;
+  }
+  .grid .portal { grid-column: span 2; }
+  .grid .portal:nth-child(4) { grid-column: 2 / span 2; }
+  @media (max-width: 1080px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .grid .portal, .grid .portal:nth-child(4) { grid-column: auto; }
+  }
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
   }
   .portal {
     background: #fff;
