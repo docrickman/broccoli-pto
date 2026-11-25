@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BCU-69420 — Member Grievance Portal</title>
 <link rel="icon" type="image/webp" href="assets/face.webp">
+<link rel="stylesheet" href="new-additions.css">
 <style>
   :root {
     --bcu-green: #2e7d32;
@@ -324,7 +325,7 @@
     <div class="figcap">Exhibit B &mdash; ruff. The Union rests.</div>
   </div>
 
-  <div class="card span2">
+  <div class="card span2" id="aliases">
     <div class="card-head">Known Aliases <span style="font-weight:400;font-size:.7rem;color:#889">subject attempts to evade the Union</span></div>
     <div class="card-body" style="display:flex;gap:14px;flex-wrap:wrap">
       <div style="flex:1;min-width:140px;text-align:center">
@@ -341,7 +342,7 @@
     <div class="figcap">The mustache is a fingerprint. The Union has filed it as one.</div>
   </div>
 
-  <div class="card span2">
+  <div class="card span2" id="offstream">
     <div class="card-head">Offstream Activity Report <span style="font-weight:400;font-size:.7rem;color:#889">long-range surveillance</span></div>
     <img src="assets/BrocMinecraft.jpg" alt="The streamer, offstream, at peace" style="width:100%;display:block">
     <div class="figcap">Long-range surveillance photograph. The subject, who is reportedly "too busy
@@ -353,7 +354,7 @@
   </aside>
   <div class="col-main">
 
-  <div class="card" style="border:2px solid var(--bcu-gold)">
+  <div class="card" id="subathon" style="border:2px solid var(--bcu-gold)">
     <div class="card-head" style="background:#fdf6df">Ratified: Subathon Provisions <span style="font-weight:400;font-size:.7rem;color:#7a6208">Collective Bargaining Agreement, Art. 23</span></div>
     <div class="card-body" style="font-size:.85rem;color:#334;line-height:1.55">
       <strong>23.1</strong> For the duration of the streamer's subathon, every <strong>Golden Kappa
@@ -671,5 +672,6 @@
   });
 })();
 </script>
+<script src="new-additions.js"></script>
 </body>
 </html>
